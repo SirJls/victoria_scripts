@@ -7,10 +7,6 @@ function mount() {
     fi
 }
 
-function hello() {
-echo $1
-}
-
 export -f mount
 
 cat << EOF > pyscript.py
