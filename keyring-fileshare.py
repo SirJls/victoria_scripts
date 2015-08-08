@@ -1,3 +1,6 @@
-import keyring
+#!/usr/bin/python
+import subprocess
 
-print(keyring.get_password("fs", "jls"))
+print 'Hello python'
+subprocess.call(["echo","$bashvar"])
+

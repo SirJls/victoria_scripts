@@ -1,17 +1,35 @@
-#!/bin/sh
-# Auto Mount CIFS / SMB / Samba Share on Ubuntu / Debian
-# Author: [Josef Jezek](http://about.me/josefjezek)
-# Donate: [Gittip](https://www.gittip.com/josefjezek)
-# Link: [Gist](https://gist.github.com/6390561)
-# Hourly cron job: 0 */1 * * * /root/auto-mount.sh > /dev/null 2>&1
+#!/bin/bash
 
-MOUNT_POINT=/media
-SHARE=//sv005/share
-DOMAIN=TOSCA7
-USERNAME=sjors
-PASSWORD=$(python /home/jls/documents/scripts/keyring-fileshare.py)
+function mount() {
+    if ! mountpoint -q $2; then
+        echo "Mount $2"
+        mount.cifs $1 $2 -o username=$3,password=$4,domain=$5,iocharset=utf8,file_mode=0777,dir_mode=0777
+    fi
+}
 
-if ! mountpoint -q $MOUNT_POINT; then
-    echo "Mount $MOUNT_POINT"
-    mount.cifs $SHARE $MOUNT_POINT -o username=$USERNAME,password=$PASSWORD,domain=$DOMAIN,iocharset=utf8,file_mode=0777,dir_mode=0777
-fi
+function hello() {
+echo $1
+}
+
+export -f mount
+
+cat << EOF > pyscript.py
+#!/usr/bin/python
+import subprocess, keyring
+
+MOUNT_POINT="/media"
+SHARE="//sv005/share"
+DOMAIN="TOSCA7"
+USERNAME="sjors"
+PASSWORD=(keyring.get_password("gmail", "jls"))
+
+myList = [SHARE, MOUNT_POINT, USERNAME, PASSWORD, DOMAIN]
+
+print('Executing python script...')
+subprocess.call(['bash', '-c', 'mount ' + " ".join(myList)])
+print('Drive successfully mounted! Have a good day!')
+
+EOF
+
+chmod 777 ./pyscript.py
+./pyscript.py
