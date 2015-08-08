@@ -9,7 +9,7 @@ MOUNT_POINT=/media
 SHARE=//sv005/share
 DOMAIN=TOSCA7
 USERNAME=sjors
-PASSWORD=Ikbensjors1990!
+PASSWORD=$(python /home/jls/documents/scripts/keyring-fileshare.py)
 
 if ! mountpoint -q $MOUNT_POINT; then
     echo "Mount $MOUNT_POINT"
