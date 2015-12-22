@@ -10,10 +10,10 @@ function mount() {
 export -f mount
 
 cat << EOF > pyscript.py
-#!/usr/bin/python
-import subprocess, keyring
+#!/usr/bin/env python
+import keyring, subprocess
 
-MOUNT_POINT="/media"
+MOUNT_POINT="/mnt"
 SHARE="//sv005/share"
 DOMAIN="TOSCA7"
 USERNAME="sjors"
@@ -29,3 +29,4 @@ EOF
 
 chmod 777 ./pyscript.py
 ./pyscript.py
+rm -rf pyscript.py
