@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# pass link to mpv
+
+urxvt -title mpv -e sh -c "mpv --ytdl-format=best $1" &
+

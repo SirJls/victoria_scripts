@@ -1,8 +1,10 @@
-#! /bin/bash
+#!/usr/bin/env bash
 #-------------------------------------------------
-# file: $HOME/documents/scripts/term_colors.sh
+# file: $HOME/scripts/term_colors.sh
 #-------------------------------------------------
+
 # Colors
+#-------------------------------------------------
 ESC_SEQ="\x1b["
 COL_RESET=$ESC_SEQ"39;49;00m"
 COL_RED=$ESC_SEQ"31;01m"

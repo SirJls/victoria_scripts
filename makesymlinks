@@ -4,7 +4,7 @@
 # author    jls - http://sjorssparreboom.nl
 # vim:nu:ai:si:et:ts=4:sw=4:fdm=indent:fdn=1:ft=vim:
 # ----------------------------------------------------
-source $HOME/scripts/term_colors.sh
+source $HOME/scripts/term_colors
 
 dir=~/dotfiles              #dofiles directory
 olddir=~/dotfiles_old       #old dotfiles directory (for backup purposes)

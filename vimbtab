@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# Script to open Vimb instances in tabbed
-
-exec vimb -e $(</tmp/tabbed.xid) "$1" &
