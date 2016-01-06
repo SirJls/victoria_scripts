@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+import keyring
+import os
+
+file=open("eduroam", "w")
+
+file.write("Description='Eduroam profile for the HRO'\n"
+           "Interface=wlp2s0\n"
+           "Connection=wireless\n"
+           "Security=wpa-configsection\n"
+           "ESSID=eduroam\n"
+           "IP=dhcp\n"
+           "WPAConfigSection=(\n"
+           "\t'ssid="'"eduroam"'"'\n"
+           "\t'proto=RSN WPA'\n"
+           "\t'key_mgmt=WPA-EAP'\n"
+           "\t'eap=PEAP'\n"
+           "\t'identity="'"0890040@hr.nl"'"'\n"
+           "\t'password=" + '"' +  keyring.get_password("0890040", "HRO") + '"' + "'\n"
+           ")"
+          )
+os.system('sudo mv eduroam /etc/netctl/eduroam')
+file.close()

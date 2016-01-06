@@ -1,0 +1,8 @@
+#!/bin/bash
+interface="BAT0"
+sys_dir="/sys/class/power_supply/${interface}"
+
+cap=$(<${sys_dir}/capacity)
+stat=$(<${sys_dir}/status)
+
+echo -e "BAT \x04$cap% \x01STAT \x05${stat^^}\x01"

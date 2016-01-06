@@ -1,0 +1,7 @@
+#!/bin/bash
+interface="wlp2s0"
+sys_dir="/sys/class/net/${interface}"
+
+con=$(<${sys_dir}/operstate)
+
+echo -e "NET \x04${con^^}\x01"

@@ -62,7 +62,7 @@ hdd(){
 }
 
 eml(){
-    maildirs="$HOME/.mail/*/INBOX/new/"
+    maildirs="$HOME/.mail/*/inbox/new/"
     ml="$(find $maildirs -type f | wc -l)"
     if (( ml > 0 )); then
         printf "%b" "\x03$ml\x01"
@@ -72,7 +72,7 @@ eml(){
 }
 
 pac(){
-    pup="$(pacman -Qqu --dbpath /tmp/checkup-db-jason/ | wc -l)"
+    pup="$(pacman -Qqu --dbpath /tmp/checkup-db-jls/ | wc -l)"
     if (( pup > 0 )); then
         printf "%b" "\x05$pup\x01"
     else
@@ -96,21 +96,31 @@ aur(){
     fi
 }
 
+con(){
+    lan="$("$HOME/scripts/connection")"
+    printf "%b" "$lan"
+}
+
 int(){
     int="$("$HOME/scripts/speed")"
     printf "%b" "$int"
 }
 
+bat(){
+    bat="$("$HOME/scripts/batt")"
+    printf "%b" "$bat"
+}
+
 weather(){
-    temps="$(shaman -l Wellington,NZ -m -f "%t" | awk '{printf "%i°C", $0}')"
+    temps="$(shaman -l Rotterdam,NL -m -c $HOME/.shaman/cache.json -f "%t" | awk '{printf "%i°C", $0}')"
     printf "%b" "\x05$temps\x01"
 }
 
 dte(){
-    dte="$(date "+%I:%M")"
+    dte="$(date "+%H:%M")"
     printf "%b" "\x02$dte\x01"
 }
 
 # Pipe to status bar
-xsetroot -name "$(music) $(mbt) $(gpu) • CPU $(cpu) MEM $(mem) • HDD $(hdd)\
-• EML $(eml) PKG $(pac) AUR $(ups)$(aur) • ETH $(int) • $(weather) • $(dte) "
+xsetroot -name "$(music) • $(bat) • CPU $(cpu) MEM $(mem) • HDD $(hdd)\
+• EML $(eml) • $(con) • $(weather) • $(dte) "
