@@ -25,4 +25,4 @@ if ps $pid &>/dev/null; then
   exit 1
 fi
 
-offlineimap -c $HOME/.mailconfigs/offlineimaprc -o -u quiet & monitor $!
+offlineimap -o -u quiet & monitor $!

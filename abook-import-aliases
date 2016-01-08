@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+abook --convert --informat mutt --infile $HOME/.mutt/aliases \
+			--outformat abook --outfile $HOME/.abook/addressbook.new
+mv $HOME/.abook/addressbook $HOME/.abook/addressbook.bak
+mv $HOME/.abook/addressbook.new $HOME/.abook/addressbook
