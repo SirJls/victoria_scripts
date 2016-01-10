@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
+# ----------------------------------------------------
+# file:     $HOME/scripts/dwm-status
+# author    jls - http://sjorssparreboom.nl
+# vim:nu:ai:si:et:ts=4:sw=4:fdm=indent:fdn=1:ft=conf:
+# ----------------------------------------------------
 # Status script for dwm
-
-# Copyright (c) 2013-2015 Jason W Ryan
+# Modified version of Jason W Ryan's dwm-status script
 # The MIT License (MIT) http://opensource.org/licenses/MIT
-
+# ----------------------------------------------------
+# Colours
+# ----------------------------------------------------
 # colours: 01:normal 02:white 03:red 04:green 05:yellow 06:blue
 # 07:cyan 08:magenta 09:grey
 
@@ -13,16 +19,7 @@ music(){
     artist="${track%%- *}"
     title="${track##*- }"
     if [[ -n "$artist" ]]; then
-        printf "%b" "\x08$artist\x01\x06$title\x01 •"
-    fi
-}
-
-mbt(){
-    tmp="$(awk '/^MB/ {print +$3}' <(sensors))"
-    if (( tmp < 45 )); then
-        printf "%b" "MB \x07$tmp\x01"
-    else
-        printf "%b" "\x03MB $tmp\x01"
+        printf "%b" "\x08$artist\x01\x06- $title\x01"
     fi
 }
 
@@ -68,31 +65,6 @@ eml(){
         printf "%b" "\x03$ml\x01"
     else
         printf "0"
-    fi
-}
-
-pac(){
-    pup="$(pacman -Qqu --dbpath /tmp/checkup-db-jls/ | wc -l)"
-    if (( pup > 0 )); then
-        printf "%b" "\x05$pup\x01"
-    else
-        printf "0"
-    fi
-}
-
-ups(){
-    ups="$(wc -l </tmp/aurupdates*)"
-    if (( ups > 0 )); then
-        printf "%b" "\x05$ups\x01"
-    else
-        printf "0"
-    fi
-}
-
-aur(){
-    aur="$(awk '$0 !~ /^No /' /tmp/aurphans* | wc -l)"
-    if (( aur > 0 )); then
-        printf "%b" "\x03 ∆\x01"
     fi
 }
 
