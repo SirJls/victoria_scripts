@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # abook export script to sync abook & mutt/alias by armin wolfermann
-abook --config $HOME/sync/abook/abookrc --datafile $HOME/sync/abook/addressbook ${@}
-abook --convert --informat abook --infile $HOME/sync/abook/addressbook --outformat mutt --outfile $HOME/.mutt/aliases.new
+abook --config $HOME/.abook/abookrc --datafile $HOME/.abook/addressbook ${@}
+abook --convert --informat abook --infile $HOME/.abook/addressbook --outformat mutt --outfile $HOME/.mutt/aliases.new
 mv $HOME/.mutt/aliases $HOME/.mutt/aliases.bak
 mv $HOME/.mutt/aliases.new $HOME/.mutt/aliases
