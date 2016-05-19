@@ -8,10 +8,6 @@
 # Modified version of Jason W Ryan's dwm-status script
 # The MIT License (MIT) http://opensource.org/licenses/MIT
 # ----------------------------------------------------
-# Colours
-# ----------------------------------------------------
-# colours: 01:normal 02:white 03:red 04:green 05:yellow 06:blue
-# 07:cyan 08:magenta 09:grey
 
 
 music(){
@@ -54,7 +50,7 @@ hdd(){
     if (( drives > 3 )); then
         printf "%b " "\x08${hd[@]:0:3} \x06${hd[@]:3:1}\x01"
     else
-        printf "%b " "\x08${hd[@]}\x01"
+        printf "%b " "\x05${hd[@]}\x01"
     fi
 }
 
