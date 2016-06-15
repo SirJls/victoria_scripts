@@ -33,7 +33,7 @@ aread() {
   atdate="$(date -d "$datetime" '+%d.%m.%y')"
   printf "Job will be run at %s\n" "$attime on $atdate"
   at "$attime" "$atdate" << EOF
-  printf '%s\n' "$message" | mutt -s "REMINDER: $subject" mail@sparreboom.nl
+  printf "%s\n" "$message" | mutt -F /home/jls/.mutt/muttrc -s "REMINDER: $subject" mail@sjorssparreboom.nl
 EOF
 }
 

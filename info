@@ -28,7 +28,8 @@ system=$(cat /etc/os-release | sed '2,$d;s/NAME="//;s/"//')
 
 if [ -n "$DISPLAY" ]; then
     wmname="dwm"
-    termfn=$(cat $HOME/.Xresources | awk '/*font/ {print $2}' | sed 's/xft://;s/:pixelsize//;s/=/\ /')
+    # termfn=$(cat $HOME/.Xresources | awk '/*font/ {print $2}' | sed 's/xft://;s/:pixelsize//;s/=/\ /')
+    termfn=$(sed -n 's/^.*font.*"\(.*\)".*$/\1/p' ~/.config/termite/config)
     systfn=$(sed -n 's/^.*font.*"\(.*\)".*$/\1/p' ~/.gtkrc-2.0)
 else
     wmname="none"
