@@ -3,4 +3,3 @@
 
 file=$1
 lpr "$file" && echo "${file##*/} sent to printer" | dzen2 -p 3
-
