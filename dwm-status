@@ -15,7 +15,9 @@ music(){
     artist="${track%%- *}"
     title="${track##*- }"
     if [[ -n "$artist" ]]; then
-        printf "%b" "\x08$artist\x01\x06- $title\x01"
+        printf "%b" "\x06$artist\x01\x06- $title\x01"
+    else
+        printf "%b" "\x04N/A\x01"
     fi
 }
 
@@ -48,19 +50,20 @@ hdd(){
         ' <(df -P)) )
     drives="${#hd[@]}"
     if (( drives > 3 )); then
-        printf "%b " "\x08${hd[@]:0:3} \x06${hd[@]:3:1}\x01"
+        printf "%b" "\x08${hd[@]:0:3} \x06${hd[@]:3:1}\x01"
     else
-        printf "%b " "\x05${hd[@]}\x01"
+        printf "%b" "\x05${hd[@]}\x01"
     fi
 }
 
 eml(){
     maildirs="$HOME/.mail/*/inbox/new/"
     ml="$(find $maildirs -type f | wc -l)"
+    df=0
     if (( ml > 0 )); then
         printf "%b" "\x03$ml\x01"
     else
-        printf "0"
+        printf "%b" "\x01$df\x01"
     fi
 }
 
@@ -90,5 +93,4 @@ dte(){
 }
 
 # Pipe to status bar
-xsetroot -name "$(music) • $(bat) • CPU $(cpu) MEM $(mem) • HDD $(hdd)\
-• EML $(eml) • $(con) • $(weather) • $(dte) "
+xsetroot -name "♫ $(music)♦ $(bat)♦ MEM$(mem)CPU$(cpu)♦ HDD$(hdd)♦ EML$(eml)♦ $(con)♦$(weather)♦$(dte)"
