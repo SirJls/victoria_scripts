@@ -1,40 +1,20 @@
 #! /bin/bash
 # -------------------------------------------------
-# file: $HOME/scripts/makesymlinks.sh
+# file:     $HOME/scripts/makesymlinks.sh
 # author    jls - http://sjorssparreboom.nl
 # vim:nu:ai:si:et:ts=4:sw=4:fdm=indent:fdn=1:ft=sh:
 # ----------------------------------------------------
-source $HOME/scripts/term_colors
-
 dir=~/dotfiles              #dofiles directory
 olddir=~/dotfiles_old       #old dotfiles directory (for backup purposes)
 file=$dir/dotstracker
-arrow=$(printf "$COL_CYAN  => $COL_RESET")
 k=1
 
-printf "$COL_GREEN# Creating directories\n# -------------------------------------------------------------------\n"
-mkdir -p $dir $olddir 2>/dev/null
-printf "$COL_CYAN  => $COL_RESET $dir\n"
-printf "$COL_CYAN  => $COL_RESET $olddir\n"
-printf "$COL_GREEN# -------------------------------------------------------------------\n\n$COL_RESET"
-printf "  Done...\n\n"
+mkdir -p $dir $olddir &>/dev/null
 
-printf "$COL_GREEN# Reading $file\n# -------------------------------------------------------------------\n$COL_RESET"
 while read file;do
-printf "$COL_GREEN# Current dotfile:\n# -------------------------------------------------------------------\n$COL_RESET"
-    printf "$COL_CYAN  =>$COL_RESET  .$file\n"
-    printf "$COL_GREEN# -------------------------------------------------------------------\n\n$COL_RESET"
     for f in $file; do
-        printf "$COL_RED# Moving existing dotfiles from $HOME to $olddir\n"
-        printf "$COL_RED# -------------------------------------------------------------------\n$COL_RESET"
-        printf "$arrow Moving $HOME/.$file to $olddir!\n"
-        mv $HOME/.$file $olddir 2>/dev/null
-        printf "$COL_RED# -------------------------------------------------------------------\n\n$COL_RESET"
-        printf "$COL_YELLOW# Creating symlink to .$file in $HOME\n$COL_RESET"
-        printf "$COL_YELLOW# -------------------------------------------------------------------\n$COL_RESET"
-        printf "$arrow Symlinking $dir/$file to .$file\n"
-        ln -s $dir/$file $HOME/.$file 2>/dev/null
-        printf "$COL_YELLOW# -------------------------------------------------------------------\n\n$COL_RESET"
+        mv $HOME/.$file $olddir &>/dev/null
+        ln -s $dir/$file $HOME/.$file &>/dev/null
     done
     ((k++))
 done < $file

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 # pass link to mpv
 
-termite --title mpv --exec="sh -c 'nohup mpv --ytdl-format=best $1 >/dev/null'" &
+# termite --title mpv --exec="sh -c 'nohup mpv --ytdl-format=best $1 >/dev/null'" &
+urxvt -title mpv -e sh -c "nohup mpv --ytdl-format=best $1 >/dev/null" &

@@ -4,4 +4,4 @@ sys_dir="/sys/class/net/${interface}"
 
 con=$(<${sys_dir}/operstate)
 
-echo -e "NET \x04${con^^}\x01"
+echo -e "NET\x04${con^^}\x01"
