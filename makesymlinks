@@ -9,7 +9,9 @@ olddir=~/dotfiles_old       #old dotfiles directory (for backup purposes)
 file=$dir/dotstracker
 k=1
 
-mkdir -p $dir $olddir &>/dev/null
+if [[ ! -d ~/dotfiles && ]] && [[ ! -d ~/dotfiles_old ]]; then
+    mkdir -p $dir $olddir &>/dev/null
+fi
 
 while read file;do
     for f in $file; do
