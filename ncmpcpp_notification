@@ -1,6 +1,6 @@
 #!/bin/bash
 icon='/usr/share/icons/gnome/scalable/actions/media-playback-start-symbolic.svg'
 
-line="$(ncmpcpp --now-playing '{%a - %t}|{%f}')"
+line="$(mpc current)"
 
-notify-send -a ncmpcpp -t 5000 -i "${icon}" 'Now playing' "${line}"
+notify-send -h string:bgcolor:#303030 -h string:fgcolor:#decc94 -a ncmpcpp -t 5000 -i "${icon}" 'Now playing' "${line}"

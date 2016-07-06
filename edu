@@ -16,7 +16,7 @@ file.write("Description='Eduroam profile for the HRO'\n"
            "\t'key_mgmt=WPA-EAP'\n"
            "\t'eap=PEAP'\n"
            "\t'identity="'"0890040@hr.nl"'"'\n"
-           "\t'password=" + '"' +  keyring.get_password("HRO", "0890040") + '"' + "'\n"
+           "\t'password=" + '"' +  keyring.get_password("school", "0890040") + '"' + "'\n"
            ")"
           )
 os.system('sudo mv eduroam /etc/netctl/eduroam')

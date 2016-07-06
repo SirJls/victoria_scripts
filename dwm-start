@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
+
 # Script to start dwm in loop
+# ----------------------------------------------------
+
 
 while true; do
     $HOME/scripts/dwm-status
@@ -7,7 +10,8 @@ while true; do
 done &
 
 while true; do
-    /usr/bin/dwm >/dev/null
+    /usr/bin/dwm > /dev/null
     # to log stderrors to a file
-    #dwm 2> ~/Build/dwm/dwm.log
+    # ----------------------------------------------------
+    #/usr/bin/dwm 2> ~/build/dwm/dwm.log
 done

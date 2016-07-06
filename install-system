@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# Provide a txt file with packages to install
+# Can be generated with e.g: pacman -Qqe > package_list.txt
+# ----------------------------------------------------
+
+# check if arguments are provided
+# ----------------------------------------------------
+if [[ $# -ne 1 ]]; then
+	printf "%s" "No arguments specified, please provide the necesse"
+fi
+
+pkglist=$1
+
+if [[ -e /usr/bin/git ]]; then
+	pacman -S git
+fi
+
+# functions
+# ----------------------------------------------------
+cgit() { [[ -e /usr/bin/git ]] && { $1 } ; }
+
+usage() {
+	cat << EOF
+	Systemctl options:
+
+	start      |  start a service
+	restart    |  reload unit configuration
+	stop       |  in the name of love
+	enable     |  start at boot
+	is-enabled |  check status
+	status     |  current state
+	disable    |  do not load at boot
+
+	list       |  list all running services
+	read       |  read the relevant service file
+	fail       |  list failed services
+
+	reboot     |  restart
+	shut       |  poweroff
+
+	help       |  show the unit manual page
+EOF
+}
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:ft=sh
+
+
+
