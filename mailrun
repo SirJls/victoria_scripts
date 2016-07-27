@@ -1,28 +1,11 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-# Check every ten seconds if the process identified as $1 is still
-# running. After 5 checks (~60 seconds), kill it. Return non-zero to
-# indicate something was killed.
-monitor() {
-  local pid=$1 i=0
+PID=$(pgrep offlineimap)
 
-  while ps $pid &>/dev/null; do
-    if (( i++ > 5 )); then
-      echo "Max checks reached. Sending SIGKILL to ${pid}..." >&2
-      kill -9 $pid; return 1
-    fi
+[ -n "$PID" ] && exit 1
 
-    sleep 10
-  done
+/usr/bin/offlineimap -o -u quiet &>/dev/null &
 
-  return 0
-}
+/usr/bin/notmuch new
 
-read -r pid < ~/.offlineimap/pid
-
-if ps $pid &>/dev/null; then
-  echo "Process $pid already running. Exiting..." >&2
-  exit 1
-fi
-
-offlineimap -o -u quiet & monitor $!
+exit 0

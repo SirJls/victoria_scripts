@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+USR_NAME=$(w -hs | awk 'NR==1 {print $1}')
+USR_ID=$(id -u "$USR_NAME")
+HDMI_STAT=$(cat /sys/class/drm/card0/*HDMI*/status)
+
+export PULSE_SERVER="unix:/run/user/"$USR_ID"/pulse/native"
+
+# cards
+HDMI=$(pactl list cards short | awk 'NR==1 {print $2}')
+ANALOG=$(pactl list cards short | awk 'NR==2 {print $2}')
+HEADPHONE=$(pactl list cards short | awk 'NR==3 {print $2}')
+
+if [[ $HDMI_STAT == connected ]]; then
+   sudo -u "$USR_NAME" pactl --server "$PULSE_SERVER" set-card-profile "$HDMI" output:hdmi-stereo-extra1
+else
+   sudo -u "$USR_NAME" pactl --server "$PULSE_SERVER" set-card-profile "$ANALOG" output:analog-stereo+input:analog-stereo
+fi
+

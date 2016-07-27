@@ -10,7 +10,7 @@ files=( "${files[@]#"$prefix"/}" )
 files=( "${files[@]%.gpg}" )
 fbase=( "${files[@]##*/}" )
 
-word=$(printf '%s\n' "${fbase[@]}" | dmenu -i -p "Passes:" -fn "Cousine:size=10" -nb "#303030" -nf "#ffffff" -sb "#303030" -sf "#decc94" "$@")
+word=$(printf '%s\n' "${fbase[@]}" | dmenu -i -p "Passes:" -fn "Cousine:size=10" -nb "#F5F5F5" -nf "#444444" -sb "#F5F5F5" -sf "#d7005f" "$@")
 
 if [[ -n $word ]]; then
   for match in "${files[@]}"; do 
