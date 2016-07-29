@@ -1,0 +1,171 @@
+#!/usr/bin/env sh
+
+# ----------------------------------------------------
+# file:     $HOME//scripts/headphone-toggle
+# author    jls - http://sjorssparreboom.nl
+# ----------------------------------------------------
+
+# Tested with pulseaudio (Server version 9.0)
+
+SINK_NAMES=($(pactl list sinks short | awk '{printf("%s\n", $2 )}'))
+CARD_NAMES=($(pactl list cards short | awk '{printf("%s\n", $2 )}'))
+
+usage() {
+	cat << EOF 
+
+	soundctl options:
+
+	headphone	|  move sink to the external usb headphones
+	speakers        |  move sink to the built-in speakers
+	hdmi		|  move sink to the hdmi device
+
+	device          |  give information about the current sound handling device
+	profiles	|  overview of all the profile available
+	list            |  list all the sinks
+
+	restart         |  restart sound server
+	help            |  show this page
+
+EOF
+}
+
+
+headphone() {
+	# User adjustment here
+	PROFILE="output:analog-stereo+input:analog-mono"
+	SINK_NAME=$(getsinkname "c-media")
+	CARD_NAME=$(getcardname "c-media")
+	# END
+
+	SINK_NR=$(pactl list sinks short | awk -v sink="$SINK_NAME" '{ IGNORECASE = 1; if($2 ~ sink && /running/ || /idle/) { {print $1} ; } ; }')
+
+	[[ ! $SINK_NR ]] && initdevice "$CARD_NAME" "$SINK_NAME" "$PROFILE"
+}
+
+speakers() {
+	# User adjustment here
+	PROFILE="output:analog-stereo+input:analog-stereo"
+	SINK_NAME=$(getsinkname "alsa_output.pci-0000_00_1b.0.analog-stereo")
+	CARD_NAME=$(getcardname "alsa_card.pci-0000_00_1b.0")
+	#END
+
+	SINK_NR=$(pactl list sinks short | awk -v sink="$SINK_NAME" '{ IGNORECASE = 1; if($2 ~ sink && /running/ || /idle/) { {print $1} ; } ; }')
+	
+	echo $CARD_NAME
+	
+	[[ ! $SINK_NR ]] && initdevice "$CARD_NAME" "$SINK_NAME" "$PROFILE"
+}
+
+hdmi() {
+	# User adjustment here
+	PROFILE="output:hdmi-stereo-extra1"
+	SINK_NAME=$(getsinkname "hdmi")
+	CARD_NAME=$(getcardname "alsa_card.pci-0000_00_03.0")
+	# END
+
+	HDMI_STAT=$(cat /sys/class/drm/card0/*HDMI*/status)
+	SINK_NR=$(pactl list sinks short | awk -v sink="$SINK_NAME" '{ IGNORECASE = 1; if($2 ~ sink && /running/ || /idle/) { {print $1} ; } ; }')
+
+	[[ ! $HDMI_STAT == connected ]] && [[ $SINK_NR ]] && initdevice "$CARD_NAME" "$SINK_NAME" "$PROFILE"
+}
+
+device() {
+        printf "%s\n\n" "----| Current device |----"
+
+	printf "%s\n%s\n%s\n%s\n%s\n"\
+	"Name: $(pactl list sinks short | awk '{ IGNORECASE = 1; if(/running/ || /idle/) { {print $2} ; } ; }')"\
+	"Current sink input number: $(pactl list sink-inputs short | awk 'NR==1 {print $1}')"\
+	"Status of the sink: $(pactl list sinks short | awk '{ IGNORECASE = 1; if(/running/ || /idle/) { {print $7} ; } ; }')"\
+	"Default Sink: $(pactl info | awk 'BEGIN {IGNORECASE=1} /default sink/ {print $3}')"\
+	"Default Source: $(pactl info | awk 'BEGIN {IGNORECASE=1} /default source/ {print $3}')"
+}
+
+list() {
+	printf "%s\n" "$(pactl list sinks short)"
+}
+
+restart() {
+	printf "%s\n" "Restarting sound server!"
+	pulseaudio -k &>/dev/null
+	printf "%s\n" "Done!"
+}
+
+# param order:
+# param1 -> card name
+# param2 -> sink name
+# param3 -> profile
+initdevice() {
+	(( $# != 3 )) && "This function requires 3 arguments in a specific order!" && exit 1
+
+	for i in ${CARD_NAMES[@]}; do
+		[[ $i == $1 ]] && card="yes"
+	done
+
+
+	for i in ${SINK_NAMES[@]}; do
+		[[ $i == $2 ]] && sink="yes"
+	done
+
+	if [[ $card == "yes" ]] && [[ $sink == "yes" ]]; then 
+		pactl set-card-profile "$1" "$3"
+		pactl set-sink-volume "$2" 25% # ! IMPORTANT SO YOUR EAR DRUMS WON'T BLOW UP
+		pactl move-sink-input "$(getcurrentsink)" "$2"
+	else
+		printf "%s\n" "It seems there was an error with selecting either the card of the sink name!" && exit 1
+	fi
+}
+
+# get the profile names
+profiles() {
+	PROFILES=$(pactl list cards | awk '/Profiles/,/Active Profile/')
+	printf "%s\n" "$PROFILES"
+
+}
+
+# get specific sink name
+getsinkname() {
+	(( $# != 1 )) && printf "%s\n" "This function requires a part of the name of the sink you are looking for!" && exit 1
+	SINK_NAME=$(printf "%s\n" ${SINK_NAMES[@]} | awk -v device="$1" 'BEGIN {IGNORECASE=1} $1 ~ device')
+	printf "%s\n" "$SINK_NAME"
+}
+
+getcardname() {
+	(( $# != 1 )) && printf "%s\n" "This function requires a part of the name of the card you are looking for!" && exit 1
+	CARD_NAME=$(printf "%s\n" ${CARD_NAMES[@]} | awk -v device="$1" 'BEGIN {IGNORECASE=1} $1 ~ device')
+	printf "%s\n" "$CARD_NAME"
+}
+
+# get the current sink
+getcurrentsink() {
+	printf "%s\n" "$(pactl list sink-inputs short | awk 'NR==1 {print $1}')"
+}
+
+# EXECUTE, MAKE MY LIFE EASIER!
+main() {
+	[[ $EUID -eq 0 ]] && printf "%s\n" "For security reasons this script shouldn't be run as root and therefore execution will stop here!" && exit 1
+
+	[[ $(which pactl 2>/dev/null | awk '!/found/' | wc -l) -eq 0 ]] && printf "%s\n" "This program requires that pactl is installed!" && exit 1
+
+	# check if arguments are provided
+	[[ $# -eq 0 ]] && usage  && exit 1
+
+	actions=("headphone" "speakers" "hdmi" "device" "list" "restart" "help")
+
+	if (( $# == 1 )); then
+		case "$1" in
+			headphone) headphone ;;
+			 speakers) speakers  ;;
+			     hdmi) hdmi      ;;
+			   device) device    ;;
+			     list) list      ;;
+			 profiles) profiles  ;;
+			  restart) restart   ;;
+			        *) usage     ;;
+		esac
+	fi
+
+}
+
+main $1
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:
