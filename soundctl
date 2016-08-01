@@ -18,8 +18,9 @@ usage() {
 	headphone	|  move sink to the external usb headphones
 	speakers        |  move sink to the built-in speakers
 	hdmi		|  move sink to the hdmi device
+	volume		|  set the volume of the sinks
 
-	device          |  give information about the current sound handling device
+	device          |  give information about the current playing sound handling device
 	profiles	|  overview of all the profile available
 	list            |  list all the sinks
 
@@ -51,8 +52,6 @@ speakers() {
 
 	SINK_NR=$(pactl list sinks short | awk -v sink="$SINK_NAME" '{ IGNORECASE = 1; if($2 ~ sink && /running/ || /idle/) { {print $1} ; } ; }')
 	
-	echo $CARD_NAME
-	
 	[[ ! $SINK_NR ]] && initdevice "$CARD_NAME" "$SINK_NAME" "$PROFILE"
 }
 
@@ -69,15 +68,24 @@ hdmi() {
 	[[ ! $HDMI_STAT == connected ]] && [[ $SINK_NR ]] && initdevice "$CARD_NAME" "$SINK_NAME" "$PROFILE"
 }
 
+volume() {
+
+	(( $# != 1 )) && printf "%s\n" "Please provide a volume level in percentage!" && exit 1
+
+	for i in ${SINK_NAMES[@]}; do
+               pactl set-sink-volume "$i" "$1%"
+	done
+}
+
 device() {
         printf "%s\n\n" "----| Current device |----"
 
 	printf "%s\n%s\n%s\n%s\n%s\n"\
-	"Name: $(pactl list sinks short | awk '{ IGNORECASE = 1; if(/running/ || /idle/) { {print $2} ; } ; }')"\
-	"Current sink input number: $(pactl list sink-inputs short | awk 'NR==1 {print $1}')"\
-	"Status of the sink: $(pactl list sinks short | awk '{ IGNORECASE = 1; if(/running/ || /idle/) { {print $7} ; } ; }')"\
+	"Name: $(pactl list sinks short | awk '{ IGNORECASE = 1; printf "%s\n", (/running/ || /idle/ ? $2 : "N\\A") }')"\
+	"Current sink input number: $(pactl list sink-inputs short | awk 'BEGIN{ printf "%s\n", (NF!=0 ? $1 : "N\\A") }')"\
+	"Status of the sink: $(pactl list sinks short | awk '{ IGNORECASE = 1; printf "%s\n", (/running/ || /idle/ ? $7 : "SUSPENDED") }')"\
 	"Default Sink: $(pactl info | awk 'BEGIN {IGNORECASE=1} /default sink/ {print $3}')"\
-	"Default Source: $(pactl info | awk 'BEGIN {IGNORECASE=1} /default source/ {print $3}')"
+	"Default Source: $(pactl info | awk 'BEGIN {IGNORECASE=1} /default source/ {print $3}')" | column -t -s ":"
 }
 
 list() {
@@ -95,7 +103,7 @@ restart() {
 # param2 -> sink name
 # param3 -> profile
 initdevice() {
-	(( $# != 3 )) && "This function requires 3 arguments in a specific order!" && exit 1
+	(( $# != 2 )) && "This function requires 3 arguments in a specific order!" && exit 1
 
 	for i in ${CARD_NAMES[@]}; do
 		[[ $i == $1 ]] && card="yes"
@@ -142,20 +150,21 @@ getcurrentsink() {
 
 # EXECUTE, MAKE MY LIFE EASIER!
 main() {
-	[[ $EUID -eq 0 ]] && printf "%s\n" "For security reasons this script shouldn't be run as root and therefore execution will stop here!" && exit 1
+	(( $EUID == 0 )) && printf "%s\n" "For security reasons this script shouldn't be run as root and therefore execution will stop here!" && exit 1
 
 	[[ $(which pactl 2>/dev/null | awk '!/found/' | wc -l) -eq 0 ]] && printf "%s\n" "This program requires that pactl is installed!" && exit 1
 
 	# check if arguments are provided
-	[[ $# -eq 0 ]] && usage  && exit 1
+	(( $# == 0 )) && usage  && exit 1
 
-	actions=("headphone" "speakers" "hdmi" "device" "list" "restart" "help")
+	actions=("headphone" "speakers" "hdmi" "volume" "device" "list" "restart" "help")
 
-	if (( $# == 1 )); then
+	if (( $# == 1 )) || (( $# == 2 )); then
 		case "$1" in
 			headphone) headphone ;;
 			 speakers) speakers  ;;
 			     hdmi) hdmi      ;;
+			   volume) volume $2 ;;
 			   device) device    ;;
 			     list) list      ;;
 			 profiles) profiles  ;;
@@ -166,6 +175,6 @@ main() {
 
 }
 
-main $1
+main $1 $2
 
 # vim:nu:ai:noet:sts=8:sw=8:ts=8:
