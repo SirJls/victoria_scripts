@@ -1,4 +1,12 @@
 #!/usr/bin/env sh
+
+# ----------------------------------------------------
+# file:     $HOME/scripts/sgit
+# author    jls - http://sjorssparreboom.nl
+# ----------------------------------------------------
+
+# Setup my gitconfig
+
 sgit() {
 	# User
 	# ----------------------------------------------------
@@ -74,14 +82,14 @@ sgit() {
 }
 
 usage () {
-    name=$(basename "$0")
-    cat <<EOF
+	name=$(basename "$0")
+	cat <<EOF
 
-    NO ARUGMENTS PROVIDED
+	NO ARUGMENTS PROVIDED
 
-    Call exmaple: $name username email
+	Call exmaple: $name username email
 
-EOF
+	EOF
 }
 
 if [[ $# -eq 2 ]]; then 
@@ -89,3 +97,5 @@ if [[ $# -eq 2 ]]; then
 else
 	usage
 fi
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

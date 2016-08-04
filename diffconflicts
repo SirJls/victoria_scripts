@@ -1,4 +1,11 @@
 #!/bin/bash
+
+# ----------------------------------------------------
+# file:     $HOME/scripts/diffconflicts
+# author    Vim Community (unknown)
+# ----------------------------------------------------
+
+
 # A better vimdiff mergetool for Git
 #
 # Git does a great job resolving merge conflicts automatically but there are
@@ -68,8 +75,8 @@
 # NOTE: Use :cq to abort the merge and exit Vim with an error code.
 
 if [[ -z $@ || $# != "5" ]] ; then
-    echo -e "Usage: $0 \$EDITOR \$BASE \$LOCAL \$REMOTE \$MERGED"
-    exit 1
+	echo -e "Usage: $0 \$EDITOR \$BASE \$LOCAL \$REMOTE \$MERGED"
+	exit 1
 fi
 
 cmd=$1
@@ -101,15 +108,17 @@ $GNU_SED -r -e '/^=======\r?$/,/^>>>>>>> /d' -e '/^<<<<<<< /d' "${MERGED}" > "${
 
 # Fire up vimdiff
 $cmd -f -R -d "${LCONFL}" "${RCONFL}" \
-    -c ":set noro" \
-    -c ":tabe $QLOCAL" -c ":vert diffs $QBASE" -c ":vert diffs $QREMOTE" \
-    -c ":winc t" -c ":tabe $QMERGED" -c ":tabfir"
+	-c ":set noro" \
+	-c ":tabe $QLOCAL" -c ":vert diffs $QBASE" -c ":vert diffs $QREMOTE" \
+	-c ":winc t" -c ":tabe $QMERGED" -c ":tabfir"
 
 EC=$?
 
 # Overwrite $MERGED only if vimdiff exits cleanly.
 if [[ $EC == "0" ]] ; then
-    cat "${LCONFL}" > "${MERGED}"
+	cat "${LCONFL}" > "${MERGED}"
 fi
 
 exit $EC
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

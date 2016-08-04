@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+
+# ----------------------------------------------------
+# file:     $HOME/scripts/dpass
+# author    jls - http://sjorssparreboom.nl
+# ----------------------------------------------------
+
+# Modified version of Jason W Ryan's dpass script
+
 # based on: https://github.com/cdown/passmenu
 
 shopt -s nullglob globstar
@@ -13,9 +21,11 @@ fbase=( "${files[@]##*/}" )
 word=$(printf '%s\n' "${fbase[@]}" | dmenu -i -p "Passes:" -fn "Cousine:size=10" -nb "#F5F5F5" -nf "#444444" -sb "#F5F5F5" -sf "#d7005f" "$@")
 
 if [[ -n $word ]]; then
-  for match in "${files[@]}"; do 
-    if [[ $word == ${match#*/} ]]; then
-      /usr/bin/pass show -c "$match" 2>/dev/null
-    fi
-  done
+	for match in "${files[@]}"; do 
+		if [[ $word == ${match#*/} ]]; then
+			/usr/bin/pass show -c "$match" 2>/dev/null
+		fi
+	done
 fi
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:a

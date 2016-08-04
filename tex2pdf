@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
+
 # ----------------------------------------------------
-# file:     $HOME/scripts/dwm-status
+# file:     $HOME/scripts/tex2pdf
 # author    jls - http://sjorssparreboom.nl
-# vim:nu:ai:si:et:ts=4:sw=4:fdm=indent:fdn=1:ft=sh
 # ----------------------------------------------------
 
 tex=$1
 name="${tex::-4}"
 if [[ ! -d garbage ]]; then
-    texi2pdf --build-dir=garbage --tidy $1
+	texi2pdf --build-dir=garbage --tidy $1
 else
-    bibtex garbage/$name.t2d/pdf/build/$name.aux
-    texi2pdf --build-dir=garbage --tidy $1
+	bibtex garbage/$name.t2d/pdf/build/$name.aux
+	texi2pdf --build-dir=garbage --tidy $1
 fi
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

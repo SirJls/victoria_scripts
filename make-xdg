@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-if [ -f ${XDG_CONFIG_HOME:-~/.config}/user-dirs.dirs ]; then
-    . ${XDG_CONFIG_HOME:-~/.config}/user-dirs.dirs
-    export XDG_DOWNLOAD_DIR XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR XDG_DOTFILES_DIR XDG_SCRIPTS_DIR XDG_CODE_DIR XDG_CONFIG_HOME
-fi

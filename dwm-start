@@ -1,17 +1,20 @@
 #!/usr/bin/env sh
 
-# Script to start dwm in loop
+# ----------------------------------------------------
+# file:     $HOME/scripts/dwm-start
+# author    Jason W Ryan
 # ----------------------------------------------------
 
-
+# Script to start dwm in loop
+# ----------------------------------------------------
 while true; do
-    $HOME/scripts/dwm-status
-    sleep 2
+	$HOME/scripts/dwm-status
+	sleep 2
 done &
 
 while true; do
-    /usr/bin/dwm > /dev/null
-    # to log stderrors to a file
-    # ----------------------------------------------------
-    #/usr/bin/dwm 2> ~/build/dwm/dwm.log
+	#/usr/bin/dwm > /dev/null
+	/usr/bin/dwm 2> ~/builds/dwm/dwm.log # Log stderrors to file
 done
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

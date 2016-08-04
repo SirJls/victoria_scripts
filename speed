@@ -1,4 +1,12 @@
 #!/bin/bash
+
+# ----------------------------------------------------
+# file:     $HOME/scripts/speed
+# author    Jason W Ryan
+# ----------------------------------------------------
+
+# Used for outputting wireless signal to the dwm status bar
+
 interface="wlp2s0"
 sys_dir="/sys/class/net/${interface}/statistics"
 
@@ -12,3 +20,5 @@ rxdif=$(echo $((rxbn - rxb)))
 rxdif=$(echo $((txbn - txb)))
 
 echo -e "\x04$((rxdif / 1024 / 2))KB \x06$((txdif / 1024 / 2))KB\x01"
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

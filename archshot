@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
+
+# ----------------------------------------------------
+# file:     $HOME/scripts/archshot
+# author    Jason W Ryan
+# ----------------------------------------------------
+
 # Basic info script for screenshot
 
-# Copyright (c) 2013-2015 Jason W Ryan
 # The MIT License (MIT) http://opensource.org/licenses/MIT
 
 # installed window managers
@@ -83,3 +88,5 @@ ${lt}                 +
 EOF
 ${shot}
 mv "$machine-$stamp.png" ~/pictures/screenshots/arch
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:ft:bash

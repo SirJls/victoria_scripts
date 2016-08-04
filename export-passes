@@ -1,15 +1,23 @@
 #!/usr/bin/env bash
 
+# ----------------------------------------------------
+# file:     $HOME/scripts/exported-passes
+# author    jls - http://sjorssparreboom.nl
+# ----------------------------------------------------
+
+[[ "$#" -ne 1 ]] && { printf "%s\n" "A filename is required to export the passes!"; exit 1; }
+
+FILE_NAME="$1"
+
 shopt -s nullglob globstar
 
 prefix=${PASSWORD_STORE_DIR:-~/.password-store}
-files=( "$prefix"/**/**.gpg )
-files=( "$prefix"/**/*.gpg )
-files=( "${files[@]#"$prefix"/}" )
-files=( "${files[@]%.gpg}" )
-fbase=( "${files[@]##*/}" )
 
-for match in "${files[@]}"; do
-    printf "%-10s %20s" $match 
-    /usr/bin/pass show "$match" 2>/dev/null
+for file in "$prefix"/**/*.gpg; do                           
+	file="${file#$prefix/}"
+	printf "%s\n" "Name: ${file%.*}" >> $FILE_NAME
+	pass "${file%.*}" >> $FILE_NAME
+	printf "\n\n" >> $FILE_NAME
 done
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

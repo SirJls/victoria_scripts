@@ -1,12 +1,12 @@
 #!/bin/sh
-# by Him on the Arch boards
-# ANSI Color -- use these variables to easily have different color
-#    and format output. Make sure to output the reset sequence after
-#    colors (f = foreground, b = background), and use the 'off'
-#    feature for anything you turn on.
 
-initializeANSI()
-{
+# ----------------------------------------------------
+# file:     $HOME/scripts/color
+# author    Him
+# ----------------------------------------------------
+
+
+initializeANSI() {
   esc=""
 
   blackf="${esc}[30m";   redf="${esc}[31m";    greenf="${esc}[32m"
@@ -33,7 +33,9 @@ initializeANSI
 cat << EOF
 
  ${redf}▆▆▆▆▆▆▆${reset} ${greenf}▆▆▆▆▆▆▆${reset} ${yellowf}▆▆▆▆▆▆▆${reset} ${bluef}▆▆▆▆▆▆▆${reset} ${purplef}▆▆▆▆▆▆▆${reset} ${cyanf}▆▆▆▆▆▆▆${reset} ${whitef}▆▆▆▆▆▆▆${reset}
- ${boldon}${blackf} ::::::::::::::::::::::::::::::::::::::::::::::::::::: ${reset}
+ ${boldon}${blackf} ::::::::::::::::::::::::::::::::::::::::::::: ${reset}
  ${boldon}${redf}▆▆▆▆▆▆▆${reset} ${boldon}${greenf}▆▆▆▆▆▆▆${reset} ${boldon}${yellowf}▆▆▆▆▆▆▆${reset} ${boldon}${bluef}▆▆▆▆▆▆▆${reset} ${boldon}${purplef}▆▆▆▆▆▆▆${reset} ${boldon}${cyanf}▆▆▆▆▆▆▆${reset} ${boldon}${whitef}▆▆▆▆▆▆▆${reset}
 
 EOF
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

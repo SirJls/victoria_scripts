@@ -1,5 +1,11 @@
 #!/bin/sh
 
+----------------------------------------------------
+file:     $HOME/scripts/mailrun
+author    Jason W Ryan
+----------------------------------------------------
+
+
 PID=$(pgrep offlineimap)
 
 [ -n "$PID" ] && exit 1

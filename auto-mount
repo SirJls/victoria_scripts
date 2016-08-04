@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# ----------------------------------------------------
+# file:     $HOME/scripts/auto-mount
+# author    jls - http://sjorssparreboom.nl
+# ----------------------------------------------------
+
+# mounting script for home share
+
 mount_point="/media"
 share="//sv005/share"
 domain="TOSCA7"
@@ -7,3 +14,5 @@ user="sjors"
 pass=$(exec python2 -c "import keyring; print keyring.get_password('gmail', 'jls')")
 
 sudo mount.cifs $share $mount_point -o username=$user,password=$pass,domain=$domain,iocharset=utf8,file_mode=0777,dir_mode=0777
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

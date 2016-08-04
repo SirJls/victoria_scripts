@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+
+# ----------------------------------------------------
+# file:     $HOME/scripts/edu
+# author    jls - http://sjorssparreboom.nl
+# ----------------------------------------------------
+
+# Make a netctl profile for school
+
 import keyring
 import os
 
@@ -21,3 +29,5 @@ file.write("Description='Eduroam profile for the HRO'\n"
           )
 os.system('sudo mv eduroam /etc/netctl/eduroam')
 file.close()
+
+# vim:nu:ai:et:sw=4:ts=8:

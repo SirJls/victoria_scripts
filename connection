@@ -1,7 +1,17 @@
 #!/bin/bash
+
+# ----------------------------------------------------
+# file:     $HOME/scripts/connection
+# author    Jason W Ryan
+# ----------------------------------------------------
+
+# Used for outputting status of wireless adapter to the dwm status bar
+
 interface="wlp2s0"
 sys_dir="/sys/class/net/${interface}"
 
 con=$(<${sys_dir}/operstate)
 
 echo -e "NET\x04${con^^}\x01"
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

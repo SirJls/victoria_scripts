@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+
+# ----------------------------------------------------
+# file:     $HOME/path/to/file
+# author    jls - http://sjorssparreboom.nl
+# ----------------------------------------------------
+
+# Modified version of Jason W Ryans tube script
+
 # pass link to mpv
 
 # termite --title mpv --exec="sh -c 'nohup mpv --ytdl-format=best $1 >/dev/null'" &

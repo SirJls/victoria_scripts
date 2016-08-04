@@ -1,9 +1,10 @@
 #! /bin/bash
+
 # -------------------------------------------------
 # file:     $HOME/scripts/makesymlinks.sh
 # author    jls - http://sjorssparreboom.nl
-# vim:nu:ai:si:et:ts=4:sw=4:fdm=indent:fdn=1:ft=sh:
 # ----------------------------------------------------
+
 dir=~/dotfiles              #dofiles directory
 olddir=~/dotfiles_old       #old dotfiles directory (for backup purposes)
 file=$dir/dotstracker
@@ -55,3 +56,5 @@ zsh () {
 }
 
 zsh
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

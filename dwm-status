@@ -1,96 +1,99 @@
 #!/usr/bin/env bash
+
 # ----------------------------------------------------
 # file:     $HOME/scripts/dwm-status
 # author    jls - http://sjorssparreboom.nl
-# vim:nu:ai:si:et:ts=4:sw=4:fdm=indent:fdn=1:ft=conf:
-# ----------------------------------------------------
-# Status script for dwm
-# Modified version of Jason W Ryan's dwm-status script
-# The MIT License (MIT) http://opensource.org/licenses/MIT
 # ----------------------------------------------------
 
+# Modified version of Jason W Ryan's dwm-status script
+
+# Status script for dwm
+
+# The MIT License (MIT) http://opensource.org/licenses/MIT
 
 music(){
-    track="$(mpc current)"
-    artist="${track%%- *}"
-    title="${track##*- }"
-    if [[ -n "$artist" ]]; then
-        printf "%b" "\x06$artist\x01\x06- $title\x01"
-    else
-        printf "%b" "\x04N/A\x01"
-    fi
+	track="$(mpc current)"
+	artist="${track%%- *}"
+	title="${track##*- }"
+	if [[ -n "$artist" ]]; then
+		printf "%b" "\x06$artist\x01\x06- $title\x01"
+	else
+		printf "%b" "\x04N/A\x01"
+	fi
 }
 
 gpu(){
-    tmp="$(awk 'NR>1{exit};1' <(nvidia-settings -q gpucoretemp -t))"
-    printf "%b" "GPU \x06$tmp\x01"
+	tmp="$(awk 'NR>1{exit};1' <(nvidia-settings -q gpucoretemp -t))"
+	printf "%b" "GPU \x06$tmp\x01"
 }
 
 mem(){
-    mem="$(awk '/^Mem/ {print $3}' <(free -m))"
-    printf "%b" "\x04$mem\x01"
+	mem="$(awk '/^Mem/ {print $3}' <(free -m))"
+	printf "%b" "\x04$mem\x01"
 }
 
-   # CPU line courtesy Procyon:
-   # https://bbs.archlinux.org/viewtopic.php?pid=874333#p874333
+# CPU line courtesy Procyon:
+# https://bbs.archlinux.org/viewtopic.php?pid=874333#p874333
 cpu(){
-    read cpu a b c previdle rest < /proc/stat
-    prevtotal=$((a+b+c+previdle))
-    sleep 0.5
-    read cpu a b c idle rest < /proc/stat
-    total=$((a+b+c+idle))
-    cpu="$((100*( (total-prevtotal) - (idle-previdle) ) / (total-prevtotal) ))"
-    printf "%b" "\x05$cpu%\x01"
+	read cpu a b c previdle rest < /proc/stat
+	prevtotal=$((a+b+c+previdle))
+	sleep 0.5
+	read cpu a b c idle rest < /proc/stat
+	total=$((a+b+c+idle))
+	cpu="$((100*( (total-prevtotal) - (idle-previdle) ) / (total-prevtotal) ))"
+	printf "%b" "\x05$cpu%\x01"
 }
 
 hdd(){
-    hd=( $(awk '
-        {i=$5} /boot/ {a=i}; /root/ {b=i}; /home/ {c=i}; /media/ {d=i}
-            END {print (NR>=11) ? a" "b" "c" "d : a" "b" "c}
-        ' <(df -P)) )
-    drives="${#hd[@]}"
-    if (( drives > 3 )); then
-        printf "%b" "\x08${hd[@]:0:3} \x06${hd[@]:3:1}\x01"
-    else
-        printf "%b" "\x05${hd[@]}\x01"
-    fi
+	hd=( $(awk '
+	{i=$5} /boot/ {a=i}; /root/ {b=i}; /home/ {c=i}; /media/ {d=i}
+END {print (NR>=11) ? a" "b" "c" "d : a" "b" "c}
+' <(df -P)) )
+drives="${#hd[@]}"
+if (( drives > 3 )); then
+	printf "%b" "\x08${hd[@]:0:3} \x06${hd[@]:3:1}\x01"
+else
+	printf "%b" "\x05${hd[@]}\x01"
+fi
 }
 
 eml(){
-    maildirs="$HOME/.mail/*/inbox/new/"
-    ml="$(find $maildirs -type f | wc -l)"
-    df=0
-    if (( ml > 0 )); then
-        printf "%b" "\x03$ml\x01"
-    else
-        printf "%b" "\x01$df\x01"
-    fi
+	maildirs="$HOME/.mail/*/inbox/new/"
+	ml="$(find $maildirs -type f | wc -l)"
+	df=0
+	if (( ml > 0 )); then
+		printf "%b" "\x03$ml\x01"
+	else
+		printf "%b" "\x01$df\x01"
+	fi
 }
 
 con(){
-    lan="$("$HOME/scripts/connection")"
-    printf "%b" "$lan"
+	lan="$("$HOME/scripts/connection")"
+	printf "%b" "$lan"
 }
 
 int(){
-    int="$("$HOME/scripts/speed")"
-    printf "%b" "$int"
+	int="$("$HOME/scripts/speed")"
+	printf "%b" "$int"
 }
 
 bat(){
-    bat="$("$HOME/scripts/batt")"
-    printf "%b" "$bat"
+	bat="$("$HOME/scripts/batt")"
+	printf "%b" "$bat"
 }
 
 weather(){
-    temps="$(shaman -l Rotterdam,NL -m -c $HOME/.shaman/cache.json -f "%t" | awk '{printf "%i°C", $0}')"
-    printf "%b" "\x05$temps\x01"
+	temps="$(shaman -l Rotterdam,NL -m -c $HOME/.shaman/cache.json -f "%t" | awk '{printf "%i°C", $0}')"
+	printf "%b" "\x05$temps\x01"
 }
 
 dte(){
-    dte="$(date "+%H:%M")"
-    printf "%b" "\x02$dte\x01"
+	dte="$(date "+%H:%M")"
+	printf "%b" "\x02$dte\x01"
 }
 
 # Pipe to status bar
 xsetroot -name "♫ $(music)♦ $(bat)♦ MEM$(mem)CPU$(cpu)♦ HDD$(hdd)♦ EML$(eml)♦ $(con)♦$(weather)♦$(dte)"
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:
