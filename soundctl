@@ -152,7 +152,7 @@ getcurrentsink() {
 main() {
 	(( $EUID == 0 )) && printf "%s\n" "For security reasons this script shouldn't be run as root and therefore execution will stop here!" && exit 1
 
-	[[ $(which pactl 2>/dev/null | awk '!/found/' | wc -l) -eq 0 ]] && printf "%s\n" "This program requires that pactl is installed!" && exit 1
+	( ! hash pactl &>/dev/null ) && printf "%s\n" "This program requires that pactl is installed!" && exit 1
 
 	# check if arguments are provided
 	(( $# == 0 )) && usage  && exit 1
