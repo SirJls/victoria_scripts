@@ -45,26 +45,46 @@ cpu(){
 }
 
 hdd(){
-	hd=( $(awk '
-	{i=$5} /boot/ {a=i}; /root/ {b=i}; /home/ {c=i}; /media/ {d=i}
-END {print (NR>=11) ? a" "b" "c" "d : a" "b" "c}
-' <(df -P)) )
-drives="${#hd[@]}"
-if (( drives > 3 )); then
-	printf "%b" "\x08${hd[@]:0:3} \x06${hd[@]:3:1}\x01"
+hd=$(df -h |  awk '/\/dev\/sda/ {sum +=$5+0} END {print sum}')
+if [[ -z "$hd" ]]; then
+	printf "%b" "\x05"N/A"\x01"
 else
-	printf "%b" "\x05${hd[@]}\x01"
+	printf "%b" "\x05${hd}%\x01"
 fi
 }
 
 eml(){
 	maildirs="$HOME/.mail/*/inbox/new/"
 	ml="$(find $maildirs -type f | wc -l)"
-	df=0
 	if (( ml > 0 )); then
 		printf "%b" "\x03$ml\x01"
 	else
-		printf "%b" "\x01$df\x01"
+		printf " 0 "
+	fi
+}
+
+pac(){
+	pup="$(pacman -Qqu --dbpath /tmp/checkup-db-${USER}/ | wc -l)"
+	if (( pup > 0 )); then
+		printf "%b" "\x05$pup\x01"
+	else
+		printf " 0"
+	fi
+}
+
+ups(){
+	ups="$(wc -l < /tmp/aurupdates*)"
+	if (( ups > 0 )); then
+		printf "%b" "\x05$ups\x01"
+	else
+		printf " 0 "
+	fi
+}
+
+aur(){
+	aur="$(awk '$0 !~ /^No /' /tmp/aurphans* | wc -l)"
+	if (( aur > 0 )); then
+		printf "%b" "\x03 ∆\x01"
 	fi
 }
 
@@ -94,6 +114,6 @@ dte(){
 }
 
 # Pipe to status bar
-xsetroot -name "♫ $(music)♦ $(bat)♦ MEM$(mem)CPU$(cpu)♦ HDD$(hdd)♦ EML$(eml)♦ $(con)♦$(weather)♦$(dte)"
+xsetroot -name "♫ $(music)♦ $(bat)♦ MEM$(mem)CPU$(cpu)♦ HDD$(hdd)♦ EML$(eml)♦ PKG$(pac) AUR$(ups)$(aur)♦ $(con)♦$(weather)♦$(dte)"
 
 # vim:nu:ai:noet:sts=8:sw=8:ts=8:

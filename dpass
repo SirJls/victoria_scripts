@@ -28,4 +28,4 @@ if [[ -n $word ]]; then
 	done
 fi
 
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:a
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

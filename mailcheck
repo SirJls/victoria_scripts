@@ -9,9 +9,9 @@
 maildirs="$HOME/.mail/*/inbox/new/"
 ml="$(find $maildirs -type f | wc -l)"
 if [ $ml == 0 ]; then
-    printf "0"
+	printf "0"
 else
-    printf "%b" "$ml"
+	printf "%b" "$ml"
 fi
 
 # vim:nu:ai:noet:sts=8:sw=8:ts=8:

@@ -43,4 +43,4 @@ usage() {
 EOF
 }
 
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:ft=sh
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

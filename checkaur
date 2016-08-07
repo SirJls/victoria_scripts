@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# ----------------------------------------------------
+# file:     $HOME/scripts/checkaur
+# author    Jason W Ryan
+# ----------------------------------------------------
+
+aurfile=$(mktemp -t aurupdates.XXXXXX)
+orpfile=$(mktemp -t aurphans.XXXXXX)
+
+# remove old files
+[[ ( -e "$aurfile" && -e "$orpfile" ) ]] && rm /tmp/aur{updates,phans}*
+
+# check for updates
+/usr/bin/cower --color=never -u > "$aurfile"
+
+/usr/bin/aurphan -a > "$orpfile"
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

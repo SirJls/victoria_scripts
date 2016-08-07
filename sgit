@@ -89,7 +89,7 @@ usage () {
 
 	Call exmaple: $name username email
 
-	EOF
+EOF
 }
 
 if [[ $# -eq 2 ]]; then 

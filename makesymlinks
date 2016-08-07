@@ -11,48 +11,48 @@ file=$dir/dotstracker
 k=1
 
 if [[ ! -d ~/dotfiles && ]] && [[ ! -d ~/dotfiles_old ]]; then
-    mkdir -p $dir $olddir &>/dev/null
+	mkdir -p $dir $olddir &>/dev/null
 fi
 
 while read file;do
-    for f in $file; do
-        mv $HOME/.$file $olddir &>/dev/null
-        ln -s $dir/$file $HOME/.$file &>/dev/null
-    done
-    ((k++))
+	for f in $file; do
+		mv $HOME/.$file $olddir &>/dev/null
+		ln -s $dir/$file $HOME/.$file &>/dev/null
+	done
+	((k++))
 done < $file
 printf "Total amount of files moved: $((k-1))\n"
 
 zsh () {
-    # Check zshell is installed
-    if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
-        # Set the default shell to zsh if it isn't currently set to zsh
-        if [[ ! $(echo $SHELL) == $(which zsh) ]]; then
-            chsh -s $(which zsh)
-        fi
-    else
-        # Get the platform of the current machine
-        platform=$(uname);
-        # If the platform is Linux, try an apt-get to install zsh and then recurse
-        if [[ $platform == 'Linux' ]]; then
-            if [[ -f /etc/redhat-release ]]; then
-                sudo yum install zsh
-                zsh
-            fi
-            if [[ -f /etc/debian_version ]]; then
-                sudo apt-get install zsh
-                zsh
-            fi
-            if [[ -f /etc/arch-release ]]; then
-                sudo pacman -S zsh
-                zsh
-            fi
-            # If the platform is OS X
-        elif [[ $platform == 'Darwin' ]]; then
-            echo "Please install zsh, then re-run this script!"
-            exit
-        fi
-    fi
+	# Check zshell is installed
+	if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
+		# Set the default shell to zsh if it isn't currently set to zsh
+		if [[ ! $(echo $SHELL) == $(which zsh) ]]; then
+			chsh -s $(which zsh)
+		fi
+	else
+		# Get the platform of the current machine
+		platform=$(uname);
+		# If the platform is Linux, try an apt-get to install zsh and then recurse
+		if [[ $platform == 'Linux' ]]; then
+			if [[ -f /etc/redhat-release ]]; then
+				sudo yum install zsh
+				zsh
+			fi
+			if [[ -f /etc/debian_version ]]; then
+				sudo apt-get install zsh
+				zsh
+			fi
+			if [[ -f /etc/arch-release ]]; then
+				sudo pacman -S zsh
+				zsh
+			fi
+			# If the platform is OS X
+		elif [[ $platform == 'Darwin' ]]; then
+			echo "Please install zsh, then re-run this script!"
+			exit
+		fi
+	fi
 }
 
 zsh
