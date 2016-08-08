@@ -11,7 +11,7 @@
 
 # The MIT License (MIT) http://opensource.org/licenses/MIT
 
-music(){
+music() {
 	track="$(mpc current)"
 	artist="${track%%- *}"
 	title="${track##*- }"
@@ -22,19 +22,19 @@ music(){
 	fi
 }
 
-gpu(){
+gpu() {
 	tmp="$(awk 'NR>1{exit};1' <(nvidia-settings -q gpucoretemp -t))"
 	printf "%b" "GPU \x06$tmp\x01"
 }
 
-mem(){
+mem() {
 	mem="$(awk '/^Mem/ {print $3}' <(free -m))"
 	printf "%b" "\x04$mem\x01"
 }
 
 # CPU line courtesy Procyon:
 # https://bbs.archlinux.org/viewtopic.php?pid=874333#p874333
-cpu(){
+cpu() {
 	read cpu a b c previdle rest < /proc/stat
 	prevtotal=$((a+b+c+previdle))
 	sleep 0.5
@@ -44,7 +44,7 @@ cpu(){
 	printf "%b" "\x05$cpu%\x01"
 }
 
-hdd(){
+hdd() {
 hd=$(df -h |  awk '/\/dev\/sda/ {sum +=$5+0} END {print sum}')
 if [[ -z "$hd" ]]; then
 	printf "%b" "\x05"N/A"\x01"
@@ -53,7 +53,7 @@ else
 fi
 }
 
-eml(){
+eml() {
 	maildirs="$HOME/.mail/*/inbox/new/"
 	ml="$(find $maildirs -type f | wc -l)"
 	if (( ml > 0 )); then
@@ -63,7 +63,7 @@ eml(){
 	fi
 }
 
-pac(){
+pac() {
 	pup="$(pacman -Qqu --dbpath /tmp/checkup-db-${USER}/ | wc -l)"
 	if (( pup > 0 )); then
 		printf "%b" "\x05$pup\x01"
@@ -72,7 +72,7 @@ pac(){
 	fi
 }
 
-ups(){
+ups() {
 	ups="$(wc -l < /tmp/aurupdates*)"
 	if (( ups > 0 )); then
 		printf "%b" "\x05$ups\x01"
@@ -81,39 +81,45 @@ ups(){
 	fi
 }
 
-aur(){
+aur() {
 	aur="$(awk '$0 !~ /^No /' /tmp/aurphans* | wc -l)"
 	if (( aur > 0 )); then
 		printf "%b" "\x03 ∆\x01"
 	fi
 }
 
-con(){
+# Needs my soundctl http://github.com/git-jls/scripts/blob/master/soundctl script added to $PATH
+vol() {
+	lvl=$(soundctl volume | awk 'BEGIN {IGNORECASE=1} /running/ {getline;getline; print $2}')
+	printf "%b" "\x03$lvl\x01"
+}
+
+con() {
 	lan="$("$HOME/scripts/connection")"
 	printf "%b" "$lan"
 }
 
-int(){
+int() {
 	int="$("$HOME/scripts/speed")"
 	printf "%b" "$int"
 }
 
-bat(){
+bat() {
 	bat="$("$HOME/scripts/batt")"
 	printf "%b" "$bat"
 }
 
-weather(){
+weather() {
 	temps="$(shaman -l Rotterdam,NL -m -c $HOME/.shaman/cache.json -f "%t" | awk '{printf "%i°C", $0}')"
 	printf "%b" "\x05$temps\x01"
 }
 
-dte(){
+dte() {
 	dte="$(date "+%H:%M")"
 	printf "%b" "\x02$dte\x01"
 }
 
 # Pipe to status bar
-xsetroot -name "♫ $(music)♦ $(bat)♦ MEM$(mem)CPU$(cpu)♦ HDD$(hdd)♦ EML$(eml)♦ PKG$(pac) AUR$(ups)$(aur)♦ $(con)♦$(weather)♦$(dte)"
+xsetroot -name "♫ $(music)♦ VOL$(vol)♦ $(bat)♦ MEM$(mem)CPU$(cpu)♦ HDD$(hdd)♦ EML$(eml)♦ PKG$(pac) AUR$(ups)$(aur)♦ $(con)♦$(weather)♦$(dte)"
 
 # vim:nu:ai:noet:sts=8:sw=8:ts=8:

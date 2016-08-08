@@ -48,10 +48,10 @@ usage() {
 
 	SOUNDCTL OPTIONS:
 
-	external[n]	|  move sink to a external device
+	external [n]	|  move sink to a external device
 	default         |  move sink to the default device
 	hdmi		|  move sink to the hdmi device
-	set-volume	|  set the volume of the sinks
+	set-volume [n]	|  set the volume of the sinks
 
 	profiles	|  overview of all the profile available
 	cards           |  list card information
