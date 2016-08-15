@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+
+# ----------------------------------------------------
+# file:     $HOME/scripts/notes
+# author    jls - http://sjorssparreboom.nl
+# ----------------------------------------------------
+
+# Did something wrong?
+# Or you don't remember something
+# Call usage
+usage() {
+
+	<<-'EOF'
+
+	USAGE:
+
+		notes ["all"|make] [module_name]
+
+	EXAMPLES:
+
+	notes all
+
+		convert all notes
+
+	notes make 2016
+
+		convert all notes for the year 2016
+
+	notes make 2016 mod_algorithms
+
+		convert all notes for year 2016 with module algorithms
+
+	EOF
+}
+
+# Grab the notes
+grabnotes() {
+	ack -n  "> Date: " . | \
+		while read line; do
+			module=$(printf "%s\n" "$line" | sed 's/\([^ ]*\) .*/\1/')
+			file=$(printf "%s\n" "$line"   | sed 's/\([^:]*\):2:>.*$/\1/')
+			date=$(printf "%s\n" "$line"   | sed 's/[^:]*:2:> Date: \(.*$\)/\1/')
+		done | \
+			sort -n | \
+		while read line; do
+			file=$(echo "$line" | sed 's/[^ ]* \(.*\)/\1/')
+			printf "%s\n" "$file"
+		done
+		unset module file date
+}
+
+# Function to call for pdf creation
+makenotes() {
+	for year in "${NOTES_DIR}/YEAR_${1}"; do
+		for module in "${year}/MOD_${2}"; do
+			cd "$module"
+			notes=$(grabnotes)
+			output_file="$module/"$(basename "$module")
+
+			oldifs=$IFS
+			IFS=$'\n'
+
+			makepdf "$output_file" "$notes"
+			makehtml "$output_file" "$notes"
+
+			IFS=$oldifs
+
+			unset notes output_file oldifs
+			cd - &>/dev/null
+		done
+		cd "$year"
+		prinf "%s\n" "Making YEAR_${year}.pdf..."
+		# Add all the pdfs in one overview for the year
+		gs -sDEVICE=pdfwrite \
+			-dQUIET \
+			-o "$(basename $year).pdf" \
+			MOD_*/*.pdf &&
+			printf "%s\n" "Created ${year}.pdf"
+		cd - &>/dev/null
+	done
+}
+
+# Make pdf with pandoc
+makepdf() {
+	pandoc --latex-engine=lualatex -H "${NOTES_DIR}/fonts.tex" --toc \
+		-o "${1}.pdf" "${NOTES_DIR}/about.md" $2 &&
+		printf "%s\n" "${1}.pdf created!"
+}
+
+# Make slides with pandoc{slidy} in HTML
+makehtml() {
+	pandoc -w slidy -H "${NOTES_DIR}/slidy.html" -s $2 | \
+		sed -e 's/<h[2-9]/<\/div><div class=\"slide\">&/' \
+		-e 's/slidy.js.gz/slidy.js/' > "${1}.html" &&
+		printf "%s\n" "${1}.html created!"
+}
+
+# Convert everything
+makeall() {
+	case "$1" in
+		"all") printf "%s\n" "Converting all notes..." && \
+		       makenotes "*" "*"; return 0
+		       ;;
+	esac
+
+	usage
+}
+
+# Covert all modules for a specific year
+makeyear() {
+	case "$1" in
+		"make")
+		if [[ $(isnumber "$2") == "true" ]]; then
+			printf "%s\n" "Converting notes in YEAR_${2}..."
+			makenotes "$2" "$*"; return 0
+		fi
+		;;
+	esac
+
+	usage
+}
+
+# Convert the whole module
+makemodule() {
+	case "$1" in
+		"make")
+		if [[ $(isnumber "$2") == "true" ]] && \
+		   [[ "$3" != "" ]]; then
+			printf "%s\n" "Converting notes in YEAR_${2}/MOD_${3}..."
+			makenotes "$2" "$3"; return 0
+		fi
+		;;
+	esac
+}
+
+# Am i a number?
+isnumber() {
+	(( $# < 1 )) && return 1
+	if [[ "$1" = [0-9]* ]]; then
+		printf "%s\n" "true"
+	else
+		printf "%s\n" "false"
+	fi
+}
+
+# Call me to start the awesomeness!
+main() {
+	(( $# <= 0 )) && usage && return 1 # We need arguments
+	(( $# >= 4 )) && usage && return 1 # To many args isn't accepted
+	(( $# == 1 )) && makeall "$1"
+	(( $# == 2 )) && makeyear "$1" "$2"
+	(( $# == 3 )) && makemodule "$1" "$2" "$3"
+}
+
+# Start the awesomeness!
+main "$1" "$2" "$3"
+
+# vim:nu:ai:noet:sts=8:sw=8:ts=8:

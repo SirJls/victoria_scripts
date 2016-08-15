@@ -45,12 +45,12 @@ cpu() {
 }
 
 hdd() {
-hd=$(df -h |  awk '/\/dev\/sda/ {sum +=$5+0} END {print sum}')
-if [[ -z "$hd" ]]; then
-	printf "%b" "\x05"N/A"\x01"
-else
-	printf "%b" "\x05${hd}%\x01"
-fi
+	hd=$(df -h |  awk '/\/dev\/sda/ {sum +=$5+0} END {print sum}')
+	if [[ -z "$hd" ]]; then
+		printf "%b" "\x05"N/A"\x01"
+	else
+		printf "%b" "\x05${hd}%\x01"
+	fi
 }
 
 eml() {
@@ -84,14 +84,18 @@ ups() {
 aur() {
 	aur="$(awk '$0 !~ /^No /' /tmp/aurphans* | wc -l)"
 	if (( aur > 0 )); then
-		printf "%b" "\x03 ∆\x01"
+		printf "%b" "\x03∆\x01"
 	fi
 }
 
 # Needs my soundctl http://github.com/git-jls/scripts/blob/master/soundctl script added to $PATH
 vol() {
 	lvl=$(soundctl volume | awk 'BEGIN {IGNORECASE=1} /running/ {getline;getline; print $2}')
-	printf "%b" "\x03$lvl\x01"
+	if [[ -z "$lvl" ]]; then
+		printf "%b" "\x030%\x01"
+	else
+		printf "%b" "\x03$lvl\x01"
+	fi
 }
 
 con() {

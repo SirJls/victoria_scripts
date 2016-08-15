@@ -198,8 +198,18 @@ restart() {
 
 # get the profile names
 profiles() {
-	PROFILES=$(pactl list cards | awk '/Profiles/,/Active Profile/')
-	printf "%s\n" "$PROFILES"
+line="..............................................\
+.........................................................................."
+        printf "\n\n%s\n\n" "----| Profiles |---- "
+
+	pactl list cards                                    | \
+		awk '/Profiles/,/Active Profile/'           | \
+		sed '/Profiles\|Active/d;'                  | \
+		sed 's/^[ \t]*//'                           | \
+		sed "1 i\\$line"                            | \
+		sed "/off/Ia\\$line"                        | \
+		sed '$d'                                    | \
+		sed '/\.\../i\\'
 }
 
 # EXECUTE, MAKE MY LIFE EASIER!
