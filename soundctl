@@ -38,7 +38,7 @@ usage() {
 	  -> HDMI_PROFILE
 	  -> HDMI_SND_CARD
 	  -> HDMI_SINK
-	
+
 	Additionally 10 other sound devices can be set.
 	The naming conventions for these ENVIRONMENT VARIABLES, where X is the position of [0-9]:
 	  -> EXTERNAL_PROFILE_0X
