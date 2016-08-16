@@ -43,10 +43,6 @@ cat << EOF
 
 	This will create a font.tex file in \$NOTES_DIR containing your font.
 
-	USAGE:
-
-		notes ["all"|make] [module_name]
-
 
 	NOTES OPTIONS:
 
@@ -96,7 +92,6 @@ makenotes() {
 			cd $module
 
 			notes=$(grabnotes)
-			# echo $(grabnotes)
 
 			output_file=$(basename $module)
 
@@ -209,6 +204,11 @@ main() {
 
 	# start the magic
 	setfont
+}
+# Call me to start the awesomeness!
+main() {
+	(( $# <= 0 )) && usage && return 1 # We need arguments
+	(( $# >= 4 )) && usage && return 1 # To many args isn't accepted
 	(( $# == 1 )) && makeall "$1"
 	(( $# == 2 )) && makeyear "$1" "$2"
 	(( $# == 3 )) && makemodule "$1" "$2" "$3"
