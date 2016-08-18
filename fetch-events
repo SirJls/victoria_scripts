@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+# ---------------------------------------------------
+# file:     $HOME/scripts/fetch-events
+# author    jls - http://sjorssparreboom.nl
+# ----------------------------------------------------
+
+# Copyright (c) 2013-2016 Sjors Sparreboom
+# The MIT License (MIT) http://opensource.org/licenses/MIT
+
+usage() {
+	cat << EOF
+
+	DESCRIPTION:
+	This program fetches all the events for the dates
+	from http://wikipedia.org/wiki and stores them in
+	${HOME}/.wikidates.
+
+	IMPORTANT:
+	This program does need a working internet connection!
+
+
+	FETCH-EVENTS OPTIONS:
+
+	go    |  Start the fetching process
+	help  |  Shows this page
+
+EOF
+}
+
+# Am I connected?
+hasconnection() {
+	(( $# < 1 )) && return 1
+	if ping -c 3 google.com &>/dev/null; then
+		printf "%s\n" "true"
+	else
+		printf "%s\n" "false"
+	fi
+}
+
+# get the event
+getevent() {
+	(( $# < 1 )) && return 1
+	w3m -cols 99999 -no-cookie -dump http://en.wikipedia.org/wiki/$date  | \
+		sed -n '/Events/,/Births/ p'                                 | \
+		sed -n 's/^.*• //p'                                          | \
+		sed '1d;2d' > "${HOME}/.wikidates/${date}"
+}
+
+run() {
+	[[ $(hasconnection) == "false" ]] &&  \
+	usage && return 1
+	mkdir ${HOME}/.wikidates &>/dev/null
+	printf "%s\n" "Fetching date events..."
+	for day in {1..365};do
+		date=$(date -d "now +$day days" +%B_%d)
+		getevent $date &
+	done
+	wait
+	# get february the 29th
+	getevent "February_29"
+	printf "%s\n" "Done, events located in ${HOME}/.wikidates!"
+}
+
+main() {
+	case "$1" in
+		  go) run     ;;
+		   *) usage   ;;
+
+	esac
+}
+
+main $1

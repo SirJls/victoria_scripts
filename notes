@@ -183,6 +183,7 @@ isnumber() {
 	fi
 }
 
+# is the font specified?
 setfont() {
 	[[ -z $NOTES_FONT ]] && FONT="TeX Gyre Pagella" || FONT=${NOTES_FONT}
 	printf "%s\n\n%s\n"\
@@ -202,13 +203,8 @@ main() {
 	(( $# <= 0 )) && usage && return 1 # We need arguments
 	(( $# >= 4 )) && usage && return 1 # To many args isn't accepted
 
-	# start the magic
 	setfont
-}
-# Call me to start the awesomeness!
-main() {
-	(( $# <= 0 )) && usage && return 1 # We need arguments
-	(( $# >= 4 )) && usage && return 1 # To many args isn't accepted
+
 	(( $# == 1 )) && makeall "$1"
 	(( $# == 2 )) && makeyear "$1" "$2"
 	(( $# == 3 )) && makemodule "$1" "$2" "$3"
