@@ -133,7 +133,7 @@ hdmi() {
 	SRSLT=$(eval echo ${SINK})
 
 	# check
-	if [[ $HDMI_STAT == connected ]]; then 
+	if [[ $HDMI_STAT == connected ]]; then
 		[[ ( ! -z "$CRSLT" && ! -z "$SRSLT" && ! -z "$PRSLT" ) ]] && switch "$CRSLT" "$SRSLT" "$PRSLT"
 	fi
 }

@@ -7,8 +7,12 @@
 
 # Make a netctl profile for school
 
-import keyring
 import os
+import sys
+from subprocess import check_output
+
+def get_pass(account):
+    return check_output("pass " + account, shell=True).splitlines()[0]
 
 file=open("eduroam", "w")
 
@@ -24,7 +28,7 @@ file.write("Description='Eduroam profile for the HRO'\n"
            "\t'key_mgmt=WPA-EAP'\n"
            "\t'eap=PEAP'\n"
            "\t'identity="'"0890040@hr.nl"'"'\n"
-           "\t'password=" + '"' +  keyring.get_password("school", "0890040") + '"' + "'\n"
+           "\t'password=" + '"' +  get_pass("0890040@hr.nl").decode("utf-8") + '"' + "'\n"
            ")"
           )
 os.system('sudo mv eduroam /etc/netctl/eduroam')
