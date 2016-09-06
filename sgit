@@ -92,7 +92,7 @@ usage () {
 EOF
 }
 
-if [[ $# -eq 2 ]]; then 
+if [[ $# -eq 2 ]]; then
 	sgit $1 $2 &> /dev/null
 else
 	usage

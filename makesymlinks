@@ -5,12 +5,12 @@
 # author    jls - http://sjorssparreboom.nl
 # ----------------------------------------------------
 
-dir=~/dotfiles              #dofiles directory
-olddir=~/dotfiles_old       #old dotfiles directory (for backup purposes)
+dir=~/dots              #dofiles directory
+olddir=~/dots_old       #old dotfiles directory (for backup purposes)
 file=$dir/dotstracker
 k=1
 
-if [[ ! -d ~/dotfiles && ]] && [[ ! -d ~/dotfiles_old ]]; then
+if [[ ! -d ~/dots && ]] && [[ ! -d ~/dots_old ]]; then
 	mkdir -p $dir $olddir &>/dev/null
 fi
 
@@ -21,7 +21,9 @@ while read file;do
 	done
 	((k++))
 done < $file
+ln -s "${HOME}/.vim"  "${HOME}/dots/config"
 printf "Total amount of files moved: $((k-1))\n"
+
 
 zsh () {
 	# Check zshell is installed
