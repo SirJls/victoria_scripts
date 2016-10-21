@@ -15,5 +15,3 @@ PID=$(pgrep offlineimap)
 /usr/bin/notmuch new
 
 exit 0
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

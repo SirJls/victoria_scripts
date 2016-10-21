@@ -242,5 +242,3 @@ main() {
 }
 
 main $1 $2
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

@@ -14,5 +14,3 @@ cap=$(<${sys_dir}/capacity)
 stat=$(<${sys_dir}/status)
 
 echo -e "BAT\x04$cap%\x01STAT\x05${stat^^}\x01"
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

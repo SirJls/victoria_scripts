@@ -11,5 +11,3 @@ if (( $# != 1 )); then
 	exit 0
 fi
 impressive --supersample --cache persistent --cachefile ."${1%%.pdf}".impressive_cache --transition None --transtime 500 $1
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

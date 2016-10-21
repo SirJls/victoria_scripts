@@ -16,5 +16,3 @@ while true; do
 	/usr/bin/dwm > /dev/null
 	# /usr/bin/dwm 2> ~/builds/dwm/dwm.log # Log stderrors to file
 done
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

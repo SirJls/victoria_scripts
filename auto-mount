@@ -14,5 +14,3 @@ user="sjors"
 pass=$(pass show jlssparreboom@gmail.com)
 
 sudo mount.cifs "$share" "$mount_point" -o username="$user",password="$pass",domain="$domain",iocharset=utf8,file_mode=0777,dir_mode=0777
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

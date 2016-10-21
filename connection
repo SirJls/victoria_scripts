@@ -13,5 +13,3 @@ sys_dir="/sys/class/net/${interface}"
 con=$(<${sys_dir}/operstate)
 
 echo -e "NET\x04${con^^}\x01"
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

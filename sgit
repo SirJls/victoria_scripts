@@ -63,9 +63,9 @@ sgit() {
 
 	# diff
 	# ----------------------------------------------------
-	git config --global alias.dm 'diff master'           # diff against master
-	git config --global alias.dw 'diff --color-words'    # diff with color words
-	git config --global alias.dc 'diff --cached'        # diff ageinst cached one
+	git config --global alias.dm 'diff master'         # diff against master
+	git config --global alias.dw 'diff --color-words'  # diff with color words
+	git config --global alias.dc 'diff --cached'       # diff against cached one
 
 	# edit unmerged file when conflict occured
 	# ----------------------------------------------------
@@ -97,5 +97,3 @@ if [[ $# -eq 2 ]]; then
 else
 	usage
 fi
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

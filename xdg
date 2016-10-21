@@ -5,7 +5,6 @@
 # author    Jason W Ryan & Arch Linux Community (Unknown)
 # ----------------------------------------------------
 
-
 # edit dotfiles
 # heavy lifting by falconindy: https://bbs.archlinux.org/viewtopic.php?id=128585
 
@@ -21,5 +20,3 @@ read -r -d '' -a files < \
 	\) 2>/dev/null)
 
 (( ${#files[*]} )) && "${EDITOR:-vi}" "${files}"
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

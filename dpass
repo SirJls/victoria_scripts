@@ -27,5 +27,3 @@ if [[ -n $word ]]; then
 		fi
 	done
 fi
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

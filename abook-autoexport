@@ -11,5 +11,3 @@ abook --config $HOME/.abook/abookrc --datafile $HOME/.abook/addressbook ${@}
 abook --convert --informat abook --infile $HOME/.abook/addressbook --outformat mutt --outfile $HOME/.mutt/aliases.new
 mv $HOME/.mutt/aliases $HOME/.mutt/aliases.bak
 mv $HOME/.mutt/aliases.new $HOME/.mutt/aliases
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

@@ -125,5 +125,3 @@ dte() {
 
 # Pipe to status bar
 xsetroot -name "♫ $(music)♦ VOL$(vol)♦ $(bat)♦ MEM$(mem)CPU$(cpu)♦ HDD$(hdd)♦ EML$(eml)♦ PKG$(pac) AUR$(ups)$(aur)♦ $(con)♦$(weather)♦$(dte)"
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

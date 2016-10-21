@@ -9,5 +9,3 @@
 
 [[ -z $((xprop -id $(</tmp/tabbed.xid)) 2>/dev/null) ]] && tabbed -d > /tmp/tabbed.xid
 exec vimb -e $(</tmp/tabbed.xid) $( [[  "$1"  ]] && echo "$1") &
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

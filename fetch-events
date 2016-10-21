@@ -42,8 +42,8 @@ hasconnection() {
 getevent() {
 	(( $# < 1 )) && return 1
 	w3m -cols 99999 -no-cookie -dump http://en.wikipedia.org/wiki/$date  | \
-		sed -n '/Events/,/Births/ p'                                 | \
-		sed -n 's/^.*• //p'                                          | \
+		sed -n '/Events/,/Births/ p'                                       | \
+		sed -n 's/^.*• //p'                                                | \
 		sed '1d;2d' > "${HOME}/.wikidates/${date}"
 }
 

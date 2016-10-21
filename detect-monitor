@@ -43,5 +43,3 @@ done
 set -x
 ${CMD}
 set +x
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

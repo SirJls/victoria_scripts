@@ -8,5 +8,3 @@
 
 file=$1
 lpr "$file" && echo "${file##*/} sent to printer" | dzen2 -p 3
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

@@ -88,5 +88,3 @@ ${lt}                 +
 EOF
 ${shot}
 mv "$machine-$stamp.png" ~/pictures/screenshots/arch
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

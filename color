@@ -37,5 +37,3 @@ cat << EOF
  ${boldon}${redf}▆▆▆▆▆▆▆${reset} ${boldon}${greenf}▆▆▆▆▆▆▆${reset} ${boldon}${yellowf}▆▆▆▆▆▆▆${reset} ${boldon}${bluef}▆▆▆▆▆▆▆${reset} ${boldon}${purplef}▆▆▆▆▆▆▆${reset} ${boldon}${cyanf}▆▆▆▆▆▆▆${reset} ${boldon}${whitef}▆▆▆▆▆▆▆${reset}
 
 EOF
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

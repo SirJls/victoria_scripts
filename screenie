@@ -6,5 +6,3 @@
 # ----------------------------------------------------
 
 scrot ~/pictures/screenshots/%d-%m-%Y-%T-screenshot.png
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:

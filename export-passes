@@ -19,5 +19,3 @@ for file in "$prefix"/**/*.gpg; do
 	pass "${file%.*}" >> $FILE_NAME
 	printf "\n\n" >> $FILE_NAME
 done
-
-# vim:nu:ai:noet:sts=8:sw=8:ts=8:
