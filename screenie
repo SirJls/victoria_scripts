@@ -1,8 +1,10 @@
-#!/usr/bin/env bash
+#! /bin/sh
 
-# ----------------------------------------------------
-# file:     $HOME/scripts/screenie
-# author    jls - http://sjorssparreboom.nl
-# ----------------------------------------------------
+pictures="${HOME}/pictures/"
 
-scrot ~/pictures/screenshots/%d-%m-%Y-%T-screenshot.png
+mkdir $pictures &> /dev/null
+mkdir "${pictures}/avatars" &> /dev/null
+mkdir "${pictures}/screenshots" &> /dev/null
+mkdir "${pictures}/wallpapers" &> /dev/null
+
+scrot "${pictures}/screenshots/%d-%m-%Y-%T-screenshot.png"

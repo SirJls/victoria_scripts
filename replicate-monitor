@@ -1,17 +1,10 @@
-#!/bin/bash
-
-# ----------------------------------------------------
-# file:     $HOME/scripts/replicate-monitor
-# author    Arch Linux Community (Unknown)
-# ----------------------------------------------------
-
-# From Arch Linux Wiki
+#! /bin/sh
 
 IN="eDP1"
-EXT="HDMI1"
+EXT="DP1"
 
 if (xrandr | grep "$EXT disconnected"); then
-	xrandr --output $IN --auto --output $EXT --off 
+  xrandr --output $IN --auto --output $EXT --off 
 else
-	xrandr --output $IN --auto --primary --output $EXT --auto --right-of $IN
+  xrandr --output $IN --auto --primary --output $EXT --auto --right-of $IN
 fi

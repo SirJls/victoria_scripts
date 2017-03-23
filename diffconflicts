@@ -1,8 +1,7 @@
-#!/bin/bash
-
+#! /bin/sh
 # ----------------------------------------------------
-# file:     $HOME/scripts/diffconflicts
-# author    Vim Community (unknown)
+# file:   $HOME/scripts/diffconflicts
+# author: Vim Community (unknown)
 # ----------------------------------------------------
 
 

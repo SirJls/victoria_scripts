@@ -1,9 +1,4 @@
-#!/usr/bin/env bash
-
-# ----------------------------------------------------
-# file:     $HOME/scripts/checkaur
-# author    Jason W Ryan
-# ----------------------------------------------------
+#! /bin/sh
 
 aurfile=$(mktemp -t aurupdates.XXXXXX)
 orpfile=$(mktemp -t aurphans.XXXXXX)

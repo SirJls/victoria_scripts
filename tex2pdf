@@ -1,9 +1,4 @@
-#!/usr/bin/env bash
-
-# ----------------------------------------------------
-# file:     $HOME/scripts/tex2pdf
-# author    jls - http://sjorssparreboom.nl
-# ----------------------------------------------------
+#! /bin/sh
 
 # NOTE: For this script to work your working directory has
 # to include NO whitespaces!
@@ -18,8 +13,8 @@ output=trash
 
 echo $filename
 if [[ ! -d "$output" ]]; then
-	texi2pdf --build-dir="$output" --tidy "$1"
+  texi2pdf --build-dir="$output" --tidy "$1"
 else
-	bibtex ${output}/*/pdf/build/${filename}.aux
-	texi2pdf --build-dir="$output" --tidy "$1"
+  bibtex ${output}/*/pdf/build/${filename}.aux
+  texi2pdf --build-dir="$output" --tidy "$1"
 fi

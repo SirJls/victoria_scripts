@@ -1,99 +1,94 @@
-#!/usr/bin/env sh
-
-# ----------------------------------------------------
-# file:     $HOME/scripts/sgit
-# author    jls - http://sjorssparreboom.nl
-# ----------------------------------------------------
+#! /bin/sh
 
 # Setup my gitconfig
 
 sgit() {
-	# User
-	# ----------------------------------------------------
-	git config --global user.name $1
-	git config --global user.email $2
+  # User
+  # ----------------------------------------------------
+  git config --global user.name $1
+  git config --global user.email $2
 
-	# Mergetool specifics
-	# ----------------------------------------------------
-	git config --global merge.tool diffconflicts
-	git config --global mergetool.diffconflicts.cmd 'diffconflicts nvim $BASE $LOCAL $REMOTE $MERGED'
-	git config --global mergetool.diffconflicts.trustExitCode true
-	git config --global mergetool.keepBackup false
+  # Mergetool specifics
+  # ----------------------------------------------------
+  git config --global merge.tool diffconflicts
+  git config --global mergetool.diffconflicts.cmd 'diffconflicts vim $BASE $LOCAL $REMOTE $MERGED'
+  git config --global mergetool.diffconflicts.trustExitCode true
+  git config --global mergetool.keepBackup false
 
-	# Colors
-	# ----------------------------------------------------
-	git config --global color.status auto
-	git config --global color.diff auto
-	git config --global color.branch auto
-	git config --global color.interactive auto
-	git config --global color.grep auto
+  # Colors
+  # ----------------------------------------------------
+  git config --global color.status auto
+  git config --global color.diff auto
+  git config --global color.branch auto
+  git config --global color.interactive auto
+  git config --global color.grep auto
 
-	# Push
-	# ----------------------------------------------------
-	git config --global push.default simple
+  # Push
+  # ----------------------------------------------------
+  git config --global push.default simple
 
-	# Aliases
-	# ----------------------------------------------------
-	git config --global alias.st 'status --short --branch'
-	git config --global alias.sh 'show'
-	git config --global alias.so 'remote show origin'
-	git config --global alias.ad 'add'
-	git config --global alias.c 'commit -v'
-	git config --global alias.ci 'commit -a'
-	git config --global alias.cam 'commit -a --amend'
-	git config --global alias.co 'checkout'
-	git config --global alias.psuh 'push'
+  # Aliases
+  # ----------------------------------------------------
+  git config --global alias.st 'status --short --branch'
+  git config --global alias.sh 'show'
+  git config --global alias.so 'remote show origin'
+  git config --global alias.ad 'add'
+  git config --global alias.c 'commit -v'
+  git config --global alias.ci 'commit -a'
+  git config --global alias.cam 'commit -a --amend'
+  git config --global alias.co 'checkout'
+  git config --global alias.psuh 'push'
 
-	# branch
-	# ----------------------------------------------------
-	git config --global alias.br branch
-	git config --global alias.ba 'branch -a'           # Show all the branches including origin
-	git config --global alias.bm 'branch --merged'     # Show the branch already merged
-	git config --global alias.bn 'branch --no-merged'  # Show the branch not merged
+  # branch
+  # ----------------------------------------------------
+  git config --global alias.br branch
+  git config --global alias.ba 'branch -a'           # Show all the branches including origin
+  git config --global alias.bm 'branch --merged'     # Show the branch already merged
+  git config --global alias.bn 'branch --no-merged'  # Show the branch not merged
 
-	# log
-	# ----------------------------------------------------
-	git config --global alias.lp 'log -p'              # with diff
-	git config --global alias.lr 'log origin'          # log in origin
+  # log
+  # ----------------------------------------------------
+  git config --global alias.lp 'log -p'              # with diff
+  git config --global alias.lr 'log origin'          # log in origin
 
-	# log tree
-	# ----------------------------------------------------
-	git config --global alias.log-graph "log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'"
-	git config --global alias.log-all "log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'"
+  # log tree
+  # ----------------------------------------------------
+  git config --global alias.log-graph "log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'"
+  git config --global alias.log-all "log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'"
 
-	# diff
-	# ----------------------------------------------------
-	git config --global alias.dm 'diff master'         # diff against master
-	git config --global alias.dw 'diff --color-words'  # diff with color words
-	git config --global alias.dc 'diff --cached'       # diff against cached one
+  # diff
+  # ----------------------------------------------------
+  git config --global alias.dm 'diff master'         # diff against master
+  git config --global alias.dw 'diff --color-words'  # diff with color words
+  git config --global alias.dc 'diff --cached'       # diff against cached one
 
-	# edit unmerged file when conflict occured
-	# ----------------------------------------------------
-	git config --global alias.edit-unmerged "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; nvim \$(f)"
+  # edit unmerged file when conflict occured
+  # ----------------------------------------------------
+  git config --global alias.edit-unmerged "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; nvim \$(f)"
 
-	# add unmerged file when conflict occured
-	# ----------------------------------------------------
-	git config --global alias.add-unmerged "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add \$(f)"
+  # add unmerged file when conflict occured
+  # ----------------------------------------------------
+  git config --global alias.add-unmerged "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add \$(f)"
 
-	# grep
-	#----------------------------------------------------
-	git config --global alias.gr 'grep'
-	git config --global alias.gn 'grep -n'
+  # grep
+  #----------------------------------------------------
+  git config --global alias.gr 'grep'
+  git config --global alias.gn 'grep -n'
 }
 
 usage () {
-	name=$(basename "$0")
-	cat <<EOF
+  name=$(basename "$0")
+  cat <<EOF
 
-	NO ARUGMENTS PROVIDED
+  NO ARUGMENTS PROVIDED
 
-	Call exmaple: $name username email
+  Call exmaple: $name username email
 
 EOF
 }
 
 if [[ $# -eq 2 ]]; then
-	sgit $1 $2 &> /dev/null
+  sgit $1 $2 &> /dev/null
 else
-	usage
+  usage
 fi

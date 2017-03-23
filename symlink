@@ -1,0 +1,15 @@
+#! /bin/sh
+
+dotfiles="${DOTFILES}"
+old_dotfiles="${HOME}/.dotfiles_old"
+files="${DOTFILES}/track"
+
+mkdir $dotfiles &> /dev/null
+mkdir $old_dotfiles &> /dev/null
+
+while read file; do
+  stripped_file=$(echo $file | sed -e 's/^.*\///')
+  yes | rm -rf  "${old_dotfiles}/.*"  && yes | rm -rf "${old_dotfiles}/*"
+  mv "${HOME}/.${stripped_file}" "${old_dotfiles}" &> /dev/null
+  ln -s "${dotfiles}/${file}" "${HOME}/.${stripped_file}"
+done < $files

@@ -1,9 +1,4 @@
-#!/usr/bin/env bash
-
-# ----------------------------------------------------
-# file:     $HOME/scripts/dpass
-# author    jls - http://sjorssparreboom.nl
-# ----------------------------------------------------
+#! /bin/sh
 
 # Modified version of Jason W Ryan's dpass script
 
@@ -18,12 +13,13 @@ files=( "${files[@]#"$prefix"/}" )
 files=( "${files[@]%.gpg}" )
 fbase=( "${files[@]##*/}" )
 
-word=$(printf '%s\n' "${fbase[@]}" | dmenu -i -p "Passes:" -fn "Cousine:size=10" -nb "#F5F5F5" -nf "#444444" -sb "#F5F5F5" -sf "#d7005f" "$@")
+# word=$(printf '%s\n' "${fbase[@]}" | dmenu -i -p "Passes:" "$@")
+word=$(printf '%s\n' "${fbase[@]}" | dmenu -fn "meslo:size=12" -nb "#282828" -nf "#ebdbb2" -sb "#282828" -sf "#cc241d" -i -p "Passes:" "$@")
 
 if [[ -n $word ]]; then
-	for match in "${files[@]}"; do 
-		if [[ $word == ${match#*/} ]]; then
-			/usr/bin/pass show -c "$match" 2>/dev/null
-		fi
-	done
+  for match in "${files[@]}"; do 
+    if [[ $word == ${match#*/} ]]; then
+      /usr/bin/pass show -c "$match" 2>/dev/null
+    fi
+  done
 fi

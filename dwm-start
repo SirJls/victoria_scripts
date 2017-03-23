@@ -1,18 +1,8 @@
-#!/usr/bin/env sh
-
+#! /bin/sh
 # ----------------------------------------------------
-# file:     $HOME/scripts/dwm-start
-# author    Jason W Ryan
-# ----------------------------------------------------
-
-# Script to start dwm in loop
+# file:   $HOME/scripts/dwm-start
+# author: jls - http://sjorssparreboom.nl
 # ----------------------------------------------------
 while true; do
-	$HOME/scripts/dwm-status
-	sleep 2
-done &
-
-while true; do
-	/usr/bin/dwm > /dev/null
-	# /usr/bin/dwm 2> ~/builds/dwm/dwm.log # Log stderrors to file
+  /usr/bin/dwm > /dev/null
 done

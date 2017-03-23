@@ -1,9 +1,4 @@
-#!/usr/bin/env bash
-
-# ----------------------------------------------------
-# file:     $HOME/scripts/exported-passes
-# author    jls - http://sjorssparreboom.nl
-# ----------------------------------------------------
+#! /bin/sh
 
 [[ "$#" -ne 1 ]] && { printf "%s\n" "A filename is required to export the passes!"; exit 1; }
 
@@ -13,9 +8,9 @@ shopt -s nullglob globstar
 
 prefix=${PASSWORD_STORE_DIR:-~/.password-store}
 
-for file in "$prefix"/**/*.gpg; do                           
-	file="${file#$prefix/}"
-	printf "%s\n" "Name: ${file%.*}" >> $FILE_NAME
-	pass "${file%.*}" >> $FILE_NAME
-	printf "\n\n" >> $FILE_NAME
+for file in "$prefix"/**/*.gpg; do
+  file="${file#$prefix/}"
+  printf "%s\n" "Name: ${file%.*}" >> $FILE_NAME
+  pass "${file%.*}" >> $FILE_NAME
+  printf "\n\n" >> $FILE_NAME
 done
