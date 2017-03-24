@@ -1,8 +1,11 @@
-#! /bin/sh
+#! /bin/bash
 
-dotfiles="${DOTFILES}"
+# we have to find the dotfiles directory
+scripts_dir="$(realpath $(dirname ${BASH_SOURCE}))"
+dotfiles="$(realpath $(dirname $scripts_dir))/*dotfiles"
+
 old_dotfiles="${HOME}/.dotfiles_old"
-files="${DOTFILES}/track"
+files="${dotfiles}/track"
 
 mkdir $dotfiles &> /dev/null
 mkdir $old_dotfiles &> /dev/null
@@ -13,3 +16,7 @@ while read file; do
   mv "${HOME}/.${stripped_file}" "${old_dotfiles}" &> /dev/null
   ln -s "${dotfiles}/${file}" "${HOME}/.${stripped_file}"
 done < $files
+
+# Setup correct DOTFILE paths
+export DOTFILES=${dotfiles}
+sed -i "s/DOTFILES=.*/DOTFILES=\"${dotfiles}\"/" < ${HOME}/.zshenv
