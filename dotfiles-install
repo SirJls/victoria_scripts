@@ -4,6 +4,7 @@
 scripts_dir="$(realpath $(dirname ${BASH_SOURCE}))"
 machine_dir="$(realpath $(dirname $scripts_dir))"
 dotfiles=$(find $machine_dir -maxdepth 1 -type d -name "*dotfiles")
+buildfiles=$(find $machine_dir -maxdepth 1 -type d -name "*builds")
 
 old_dotfiles="${HOME}/.dotfiles_old"
 files="${dotfiles}/track"
@@ -18,20 +19,21 @@ while read file; do
   ln -s "${dotfiles}/${file}" "${HOME}/.${stripped_file}"
 done < $files
 
-# Setup correct DOTFILES paths
-export DOTFILES=$dotfiles
-sed -i "s#DOTFILES=.*#DOTFILES=\"${dotfiles}\"#g" "${dotfiles}/zsh/zshenv"
-
 # zsh config stuff
 if (hash zsh &>/dev/null);then
   mkdir -p "${DOTFILES}/zsh/history" &> /dev/null
   touch "${DOTFILES}/zsh/history/histfile"
+# setup correct paths for configs in zshenv
+  sed -i "s#DOTFILES=.*#DOTFILES=\"${dotfiles}\"#g" "${dotfiles}/zsh/zshenv"
+  sed -i "s#SCRIPTS=.*#SCRIPTS=\"${scripts_dir}\"#g" "${dotfiles}/zsh/zshenv"
+  sed -i "s#BUILDS=.*#BUILDS=\"${buildfiles}\"#g" "${dotfiles}/zsh/zshenv"
 else
   printf "%s\n" "Zsh was not found on your computer, please install!"
 fi
 
 # vim config stuff
-mkdir -p "${DOTFILES}/vim/{backup,autoload}" &> /dev/null
+mkdir -p "${DOTFILES}/vim/backup" &> /dev/null
+mkdir -p "${DOTFILES}/vim/autoload" &> /dev/null
 if [[ ! -f "${DOTFILES}/vim/autoload/plug.vim" ]]; then
   curl -o "${DOTFILES}/vim/autoload/plug.vim" https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
