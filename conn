@@ -1,0 +1,18 @@
+#!/bin/bash
+
+interface=$(netctl list | sed -n '/*/p' | sed -n 's/\*//gp')
+ping -c 3 google.com &> /dev/null
+
+if [[ $interface != "" ]]; then
+  case "${?}" in
+    0) network="CONNECTION: UP | ACCESS POINT: ${interface}" ;;
+    *) network="CONNECTION: DOWN | ACCESS POINT: ${interface}" ;;
+  esac
+else
+  case "${?}" in
+    0) network="CONNECTION: UP | ACCESS POINT: DISCONNECTED" ;;
+    *) network="CONNECTION: DOWN | ACCESS POINT: DISCONNECTED" ;;
+  esac
+fi
+
+printf "%s\n" "${network}"

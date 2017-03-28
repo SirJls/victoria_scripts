@@ -1,0 +1,7 @@
+#!/usr/bin/env python3
+import glob
+import random
+from os.path import expanduser
+home=expanduser("~")
+walls=glob.glob(home + "/wallpapers/png/*")
+print(random.choice(walls))

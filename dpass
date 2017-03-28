@@ -14,12 +14,12 @@ files=( "${files[@]%.gpg}" )
 fbase=( "${files[@]##*/}" )
 
 # word=$(printf '%s\n' "${fbase[@]}" | dmenu -i -p "Passes:" "$@")
-word=$(printf '%s\n' "${fbase[@]}" | dmenu -fn "meslo:size=12" -nb "#282828" -nf "#ebdbb2" -sb "#282828" -sf "#cc241d" -i -p "Passes:" "$@")
+word=$(printf '%s\n' "${fbase[@]}" | dmenu -i -p "Passes:" "$@")
 
 if [[ -n $word ]]; then
-  for match in "${files[@]}"; do 
+  for match in "${files[@]}"; do
     if [[ $word == ${match#*/} ]]; then
-      /usr/bin/pass show -c "$match" 2>/dev/null
+      /usr/bin/pass show "$match" 2>/dev/null
     fi
   done
 fi
