@@ -1,0 +1,17 @@
+#! /bin/sh
+
+DAWN_TIME=$(( 8 * 60 ))
+DUSK_TIME=$(( 20 * 60 ))
+
+minutes=$(( $(date +%H) * 60 + $(date +%M) ))
+
+if (( $minutes < $DUSK_TIME)) && (( $minutes < $DAWN_TIME )); then
+  # night configuration
+  exec termite -c $XDG_CONFIG_HOME/termite/config_night
+elif (( $minutes >= $DAWN_TIME )) && (( $minutes < $DUSK_TIME )); then
+  # day configuration
+  exec termite -c $XDG_CONFIG_HOME/termite/config_day
+else
+  # night configuration
+  exec termite -c $XDG_CONFIG_HOME/termite/config_night
+fi

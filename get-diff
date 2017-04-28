@@ -1,0 +1,24 @@
+#!/bin/bash
+
+first_dir=$(realpath $1)
+second_dir=$(realpath $2)
+output_dir=$(realpath $3)
+
+dir_entries_first=($(find $first_dir -type f))
+dir_entries_second=($(find $second_dir -type f))
+
+output_file=$(basename $first_dir)
+output_path="${output_dir}/output_${output_file}"
+
+mkdir -p $output_dir &>/dev/null
+rm -r $output_path &>/dev/null && touch $output_path
+
+for first_entry in "${dir_entries_first[@]}" ; do
+  for second_entry in "${dir_entries_second[@]}"; do
+    if [[ ${first_entry,,} == ${second_entry,,} ]]; then
+      echo $first_entry
+      diff "${first_entry}" "${second_entry}" |
+      sed '/Binary/d;/.*\.dll/d' >> $output_path
+    fi
+  done
+done

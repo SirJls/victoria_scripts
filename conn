@@ -1,16 +1,17 @@
 #!/bin/bash
 
-interface=$(netctl list | sed -n '/*/p' | sed -n 's/\*//gp')
-ping -c 3 google.com &> /dev/null
+profile=$(netctl list | sed -n '/*/p' | sed -n 's/\*//gp')
+device=$(echo $profile | cut -d - -f1 | tr -d ' ')
+carrier=$(</sys/class/net/${device}/carrier)
 
-if [[ $interface != "" ]]; then
-  case "${?}" in
-    0) network="CONNECTION: UP | ACCESS POINT: ${interface}" ;;
-    *) network="CONNECTION: DOWN | ACCESS POINT: ${interface}" ;;
+if [[ $profile != "" ]]; then
+  case "${carrier}" in
+    1) network="CONNECTION: UP | ACCESS POINT: ${profile}" ;;
+    *) network="CONNECTION: DOWN | ACCESS POINT: ${profile}" ;;
   esac
 else
-  case "${?}" in
-    0) network="CONNECTION: UP | ACCESS POINT: DISCONNECTED" ;;
+  case "${carrier}" in
+    1) network="CONNECTION: UP | ACCESS POINT: DISCONNECTED" ;;
     *) network="CONNECTION: DOWN | ACCESS POINT: DISCONNECTED" ;;
   esac
 fi

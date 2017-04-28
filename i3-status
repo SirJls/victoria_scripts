@@ -2,7 +2,7 @@
 
 while (( 1 )); do
     ibus=$(ibus engine 2> /dev/null)
-    time=$(date +"%a %Y-%m-%d %H:%M")
+    time=$(date +"%a %d-%m-%Y %H:%M")
     batt=$(batt)
     net=$(conn)
     printf "%s %s %s" "BATTERY: ${batt} |" "${net} |" "${time}"

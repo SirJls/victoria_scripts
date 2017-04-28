@@ -1,7 +1,21 @@
 #!/usr/bin/env python3
-import glob
-import random
+import glob, random
+from time import strftime
 from os.path import expanduser
 home=expanduser("~")
-walls=glob.glob(home + "/wallpapers/png/*")
+walls=""
+
+DAWN_TIME=(8 * 60)
+DUSK_TIME=(20 * 60)
+
+minutes=(int(strftime("%H")) * 60 + int(strftime("%M")))
+
+if minutes < DUSK_TIME and minutes < DAWN_TIME:
+    # night configuration
+    walls=glob.glob(home + "/Pictures/Wallpapers/High Definition Collection/Space/*")
+elif minutes >= DAWN_TIME and minutes < DUSK_TIME:
+    walls=glob.glob(home + "/Pictures/Wallpapers/High Definition Collection/Anime/*")
+else:
+    walls=glob.glob(home + "/Pictures/Wallpapers/High Definition Collection/Space/*")
+
 print(random.choice(walls))

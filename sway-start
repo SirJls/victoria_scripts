@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+# sway specifics
+# ----------------------------------------------------
+export XKB_DEFAULT_OPTIONS=caps:swapescape
+export WLC_DEBUG=xwm
+export _JAVA_AWT_WM_NONREPARENTING=1
+export GTK_IM_MOUDLE=ibus
+export XMODIFIERS=@im=ibus
+export QT_IM_MODULE=ibus
+
+while true; do
+  /usr/bin/sway &> /dev/null
+done
