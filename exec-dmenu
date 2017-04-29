@@ -7,11 +7,11 @@ minutes=$(( $(date +%H) * 60 + $(date +%M) ))
 
 if (( $minutes < $DUSK_TIME)) && (( $minutes < $DAWN_TIME )); then
   # night configuration
-  exec dmenu_run -nb "#0b141a" -nf "#61707a" -sf "#61707a" -sf "#ba656d" -sb "#0b141a"
+  dmenu_run -nb "#0b141a" -nf "#61707a" -sf "#61707a" -sf "#ba656d" -sb "#0b141a"
 elif (( $minutes >= $DAWN_TIME )) && (( $minutes < $DUSK_TIME )); then
   # day configuration
-  exec dmenu_run -nb "#ffffff" -nf "#6d767d" -sf "#6d767d" -sf "#a69500" -sb "#ffffff"
+  dmenu_run -nb "#ffffff" -nf "#6d767d" -sf "#6d767d" -sf "#a69500" -sb "#ffffff"
 else
   # night configuration
-  exec dmenu_run -nb "#0b141a" -nf "#61707a" -sf "#61707a" -sf "#ba656d" -sb "#0b141a"
+  dmenu_run -nb "#0b141a" -nf "#61707a" -sf "#61707a" -sf "#ba656d" -sb "#0b141a"
 fi

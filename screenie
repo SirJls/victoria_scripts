@@ -1,10 +1,8 @@
 #! /bin/sh
 
-pictures="${HOME}/pictures/"
+pictures="${HOME}/Pictures"
 
-mkdir $pictures &> /dev/null
-mkdir "${pictures}/avatars" &> /dev/null
-mkdir "${pictures}/screenshots" &> /dev/null
-mkdir "${pictures}/wallpapers" &> /dev/null
+mkdir -p $pictures &> /dev/null
+mkdir "${pictures}/Screenshots" &> /dev/null
 
-scrot "${pictures}/screenshots/%d-%m-%Y-%T-screenshot.png"
+scrot "${pictures}/Screenshots/%d-%m-%Y-%T-screenshot.png"
