@@ -1,0 +1,19 @@
+#! /bin/sh
+
+DAWN_TIME=$(( 8 * 60 ))
+DUSK_TIME=$(( 20 * 60 ))
+
+hours=$(date +%H)
+minutes=$(date +%M)
+total=$(( ${hours#0} * 60 + ${minutes#0} ))
+
+if (( $total < $DUSK_TIME)) && (( $total < $DAWN_TIME )); then
+  # night configuration
+  newsbeuter -C ${DOTFILES}/newsbeuter/config_night
+elif (( $total >= $DAWN_TIME )) && (( $total < $DUSK_TIME )); then
+  # day configuration
+  newsbeuter -C ${DOTFILES}/newsbeuter/config_day
+else
+  # night configuration
+  newsbeuter -C ${DOTFILES}/newsbeuter/config_night
+fi
