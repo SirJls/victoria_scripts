@@ -1,0 +1,25 @@
+#! /bin/sh
+
+DAWN_TIME=$(( 8 * 60 ))
+DUSK_TIME=$(( 20 * 60 ))
+
+hours=$(date +%H)
+minutes=$(date +%M)
+total=$(( ${hours#0} * 60 + ${minutes#0} ))
+
+if (( $total < $DUSK_TIME)) && (( $total < $DAWN_TIME )); then
+  # night configuration
+  sed -i 's/include config_day/include config_night/g' \
+    "${XDG_CONFIG_HOME}/zathura/zathurarc"
+  # night configuration
+elif (( $total >= $DAWN_TIME )) && (( $total < $DUSK_TIME )); then
+  # day configuration
+  sed -i 's/include config_night/include config_day/g' \
+    "${XDG_CONFIG_HOME}/zathura/zathurarc"
+else
+  # night configuration
+  sed -i 's/include config_day/include config_night/g' \
+    "${XDG_CONFIG_HOME}/zathura/zathurarc"
+fi
+
+/usr/bin/zathura &>/dev/null
