@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
 while (( 1 )); do
-    ibus=$(ibus engine 2> /dev/null)
-    time=$(date +"%a %d-%m-%Y %H:%M")
-    batt=$(batt)
-    net=$(conn)
-    printf "%s %s %s" "BATTERY: ${batt} |" "${net} |" "${time}"
-    printf "\n"
-    sleep 1
+  ibus=$(ibus engine 2> /dev/null)
+  time=$(date +"%a %d-%m-%Y %H:%M")
+  batt=$(batt)
+  net=$(conn)
+  printf "%s %s %s" "BATTERY: ${batt} |" "${net} |" "${time}"
+  printf "\n"
+  sleep 1
 done
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

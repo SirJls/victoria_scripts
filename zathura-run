@@ -23,3 +23,5 @@ else
 fi
 
 /usr/bin/zathura &>/dev/null
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

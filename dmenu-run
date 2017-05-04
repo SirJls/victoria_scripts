@@ -17,3 +17,5 @@ else
   # night configuration
   dmenu_run -nb "#0b141a" -nf "#61707a" -sf "#61707a" -sf "#ba656d" -sb "#0b141a"
 fi
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

@@ -6,3 +6,5 @@ mkdir -p $pictures &> /dev/null
 mkdir "${pictures}/Screenshots" &> /dev/null
 
 scrot "${pictures}/Screenshots/%d-%m-%Y-%T-screenshot.png"
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

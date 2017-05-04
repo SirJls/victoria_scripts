@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 profile=$(netctl list | sed -n '/*/p' | sed -n 's/\*//gp')
 device=$(echo $profile | cut -d - -f1 | tr -d ' ')
@@ -17,3 +17,5 @@ else
 fi
 
 printf "%s\n" "${network}"
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

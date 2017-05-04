@@ -1,0 +1,12 @@
+#!/bin/sh
+
+intern=eDP1
+extern=DP1
+
+if xrandr | grep "$extern disconnected"; then
+  xrandr --output "$extern" --off --output "$intern" --auto
+else
+  xrandr --output "$extern" --auto
+fi
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

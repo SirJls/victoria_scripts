@@ -1,6 +1,5 @@
 #! /bin/bash
 
-# file:   $HOME/scripts/xdg
 # author: Jason W Ryan & Arch Linux Community (Unknown)
 
 # edit dotfiles
@@ -18,3 +17,5 @@ read -r -d '' -a files < \
   \) 2>/dev/null)
 
 (( ${#files[*]} )) && "${EDITOR:-vi}" "${files}"
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

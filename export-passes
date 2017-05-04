@@ -14,3 +14,5 @@ for file in "$prefix"/**/*.gpg; do
   pass "${file%.*}" >> $FILE_NAME
   printf "\n\n" >> $FILE_NAME
 done
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

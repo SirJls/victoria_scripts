@@ -92,3 +92,5 @@ if [[ $# -eq 2 ]]; then
 else
   usage
 fi
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

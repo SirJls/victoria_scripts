@@ -10,3 +10,5 @@ orpfile=$(mktemp -t aurphans.XXXXXX)
 /usr/bin/cower --color=never -u > "$aurfile"
 
 /usr/bin/aurphan -a > "$orpfile"
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

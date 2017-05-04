@@ -17,3 +17,5 @@ else
   # night configuration
   termite -c $XDG_CONFIG_HOME/termite/config_night
 fi
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

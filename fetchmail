@@ -1,0 +1,13 @@
+##! /usr/bin/env/sh
+
+PID=$(pidof offlineimap)
+
+[ -n "$PID" ] && exit 1
+
+offlineimap -o -u queit &>/dev/null
+
+notmuch new
+
+exit 0
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

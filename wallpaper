@@ -14,8 +14,10 @@ if minutes < DUSK_TIME and minutes < DAWN_TIME:
     # night configuration
     walls=glob.glob(home + "/Pictures/Wallpapers/High Definition Collection/Space/*")
 elif minutes >= DAWN_TIME and minutes < DUSK_TIME:
-    walls=glob.glob(home + "/Pictures/Wallpapers/High Definition Collection/Anime/*")
+    walls=glob.glob(home + "/Pictures/Wallpapers/High Definition Collection/Animals/*")
 else:
     walls=glob.glob(home + "/Pictures/Wallpapers/High Definition Collection/Space/*")
 
 print(random.choice(walls))
+
+# vim:set ft=python et sw=4 ts=8 tw=79:
