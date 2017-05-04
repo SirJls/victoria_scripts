@@ -7,20 +7,25 @@ dotfiles=$(find $machine_dir -maxdepth 1 -type d -name "*dotfiles")
 buildfiles=$(find $machine_dir -maxdepth 1 -type d -name "*builds")
 
 old_dotfiles="${HOME}/.dotfiles_old"
-files="${dotfiles}/track"
+files="${dotfiles}/install"
 
 mkdir $dotfiles &> /dev/null
 mkdir $old_dotfiles &> /dev/null
 
-while read file; do
-  stripped_file=$(echo $file | sed -e 's/^.*\///')
-  yes | rm -rf  "${old_dotfiles}/.*" && yes | rm -rf "${old_dotfiles}/*"
-  mv "${HOME}/.${stripped_file}" "${old_dotfiles}" &> /dev/null
-  ln -s "${dotfiles}/${file}" "${HOME}/.${stripped_file}"
+while read line; do
+  comment=$(echo $line | awk '{ if (/^#/) { print "0" } else { print "1"} }')
+  empty=$(echo $line | awk '{ if (/./) { print "1" } else { print "0" } }')
+  if (( $comment == 1 )) && (( $empty == 1 )); then
+    file=$line
+    stripped_file=$(echo $file | sed -e 's/^.*\///')
+    yes | rm -rf  "${old_dotfiles}/.*" && yes | rm -rf "${old_dotfiles}/*"
+    mv "${HOME}/.${stripped_file}" "${old_dotfiles}" &> /dev/null
+    ln -s "${dotfiles}/${file}" "${HOME}/.${stripped_file}"
+  fi
 done < $files
 
 # zsh config stuff
-if (hash zsh &>/dev/null);then
+if (hash zsh &>/dev/null); then
   mkdir -p "${DOTFILES}/zsh/history" &> /dev/null
   touch "${DOTFILES}/zsh/history/histfile"
   # setup correct paths for configs in zshenv

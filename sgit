@@ -10,9 +10,9 @@ sgit() {
 
   # Mergetool specifics
   # ----------------------------------------------------
-  git config --global merge.tool diffconflicts
-  git config --global mergetool.diffconflicts.cmd 'diffconflicts vim $BASE $LOCAL $REMOTE $MERGED'
-  git config --global mergetool.diffconflicts.trustExitCode true
+  git config --global merge.tool diff-conflicts
+  git config --global mergetool.diff-conflicts.cmd 'diff-conflicts vim $BASE $LOCAL $REMOTE $MERGED'
+  git config --global mergetool.diff-conflicts.trustExitCode true
   git config --global mergetool.keepBackup false
 
   # Colors
