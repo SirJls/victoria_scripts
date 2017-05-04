@@ -1,0 +1,28 @@
+#! /bin/sh
+
+usage() {
+  filename=$(basename "$0")
+  echo "Usage: ${filename} -d <domain> -p <port>"
+}
+
+if (( $# == 4 )); then
+  case "$1" in
+    -d ) domain="$2" ;;
+     * ) usage       ;;
+  esac
+
+  case "$3" in
+    -p ) port="$4"   ;;
+     * ) usage
+  esac
+else
+  usage
+  exit 1
+fi
+
+if ( hash openssl ); then
+  openssl s_client -connect "${domain}:${port}" 0> /dev/null 2>/dev/null | \
+    openssl x509 -noout -fingerprint | awk '/^SHA/'
+fi
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:
