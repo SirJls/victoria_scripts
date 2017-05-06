@@ -22,7 +22,7 @@ fi
 
 if ( hash openssl ); then
   openssl s_client -connect "${domain}:${port}" 0> /dev/null 2>/dev/null | \
-    openssl x509 -noout -fingerprint | awk '/^SHA/'
+    openssl x509 -noout -fingerprint -sha256 | awk '/^SHA/'
 fi
 
 # vim:set ft=sh et sw=2 ts=2 tw=79:
