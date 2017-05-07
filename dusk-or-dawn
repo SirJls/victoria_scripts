@@ -1,0 +1,21 @@
+#! /bin/sh
+
+DAWN_TIME=$(( 8 * 60 ))
+DUSK_TIME=$(( 20 * 60 ))
+
+hours=$(date +%H)
+minutes=$(date +%M)
+total=$(( ${hours#0} * 60 + ${minutes#0} ))
+
+if (( $total < $DUSK_TIME)) && (( $total < $DAWN_TIME )); then
+  # night configuration
+  echo "dusk"
+elif (( $total >= $DAWN_TIME )) && (( $total < $DUSK_TIME )); then
+  # day configuration
+  echo "dawn"
+else
+  # night configuration
+  echo "dusk"
+fi
+
+# vim:set ft=sh et sw=2 ts=2 tw=79:

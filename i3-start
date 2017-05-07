@@ -7,23 +7,14 @@ while :; do
 done &
 
 while ((1)); do
-  DAWN_TIME=$(( 8 * 60 ))
-  DUSK_TIME=$(( 20 * 60 ))
 
-  hours=$(date +%H)
-  minutes=$(date +%M)
-  total=$(( ${hours#0} * 60 + ${minutes#0} ))
+  day_time=$(dusk-or-dawn)
 
-  if (( $total < $DUSK_TIME)) && (( $total < $DAWN_TIME )); then
-    # night configuration
-    cat $XDG_CONFIG_HOME/i3/config_night > $XDG_CONFIG_HOME/i3/config
-    i3-msg -q reload
-  elif (( $total >= $DAWN_TIME )) && (( $total < $DUSK_TIME )); then
-    # day configuration
+  if [[ $day_time == "dawn" ]]; then
+    # day
     cat $XDG_CONFIG_HOME/i3/config_day > $XDG_CONFIG_HOME/i3/config
     i3-msg -q reload
   else
-    # night configuration
     cat $XDG_CONFIG_HOME/i3/config_night > $XDG_CONFIG_HOME/i3/config
     i3-msg -q reload
   fi
