@@ -1,13 +1,20 @@
 #!/usr/bin/env sh
 
-while :; do
+while :;
+do
   wp=$($SCRIPTS/wallpaper | sed -r 's/(^|$)/\1"/g')
   eval "feh --randomize --bg-fill $wp"
   sleep 10
 done &
 
-while ((1)); do
+while :;
+do
+  $SCRIPTS/fetch-mail
+  sleep $(( 60 * 1 ))
+done &
 
+while :;
+do
   day_time=$(dusk-or-dawn)
 
   if [[ $day_time == "dawn" ]]; then

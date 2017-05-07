@@ -4,7 +4,7 @@ PID=$(pidof offlineimap)
 
 [ -n "$PID" ] && exit 1
 
-offlineimap -o -u queit &>/dev/null
+offlineimap -c ~/.offlineimap/offlineimaprc -o -u quiet &>/dev/null
 
 notmuch new
 

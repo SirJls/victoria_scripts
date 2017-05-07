@@ -1,11 +1,107 @@
 #!/usr/bin/env bash
 
+ups() {
+  ups="$(wc -l < /tmp/aurupdates*)"
+  if (( ups > 0 )); then
+    printf "%s" " ${ups} "
+  fi
+}
+
+aur() {
+  aur="$(awk '$0 !~ /^No /' /tmp/aurphans* | wc -l)"
+  if (( aur > 0 )); then
+    printf "%s" " ∆ "
+  fi
+}
+
+pac() {
+  pup="$(pacman -Qqu | wc -l)"
+  if (( $pup > 0 )); then
+    printf "%s" " ${pup} "
+  else
+    printf "0"
+  fi
+}
+
+eml() {
+  maildirs="${HOME}/Documents/Mail/*/Inbox/new"
+  ml="$(find $maildirs -type f | wc -l)"
+  if (( ml > 0 )); then
+    printf "%s" " ${ml} "
+  else
+    printf "0"
+  fi
+}
+
+cpu() {
+  read cpu a b c previdle rest < /proc/stat
+  prevtotal=$((a+b+c+previdle))
+  sleep 0.5
+  read cpu a b c idle rest < /proc/stat
+  total=$((a+b+c+idle))
+  cpu="$((100*( (total-prevtotal) - (idle-previdle) ) / (total-prevtotal) ))"
+  printf "%s" " ${cpu}% "
+}
+
+mem() {
+  mem="$(awk '/^Mem/ {print $3}' <(free -m))"
+  printf "%s" " ${mem} "
+}
+
+hdd() {
+  cap=$(awk '{ sum += $5 } END { print sum }' <(df -P))
+  printf "%s" " ${cap}% "
+}
+
+con() {
+  profile=$(netctl list | sed -n '/*/p' | sed -n 's/\*//gp')
+  device=$(echo $profile | cut -d - -f1 | tr -d ' ')
+  carrier=$(</sys/class/net/${device}/carrier)
+
+  if [[ $profile != "" ]]; then
+    case "${carrier}" in
+      1) network="CONNECTION: UP | ACCESS POINT:${profile}"     ;;
+      *) network="CONNECTION: DOWN | ACCESS POINT:${profile}"   ;;
+    esac
+  else
+    case "${carrier}" in
+      1) network="CONNECTION: UP | ACCESS POINT: DISCONNECTED"   ;;
+      *) network="CONNECTION: DOWN | ACCESS POINT: DISCONNECTED" ;;
+    esac
+  fi
+  printf "%s" " ${network} "
+}
+
+bat() {
+  interface="BAT0"
+  batt="/sys/class/power_supply/${interface}"
+
+  current=$(<"${batt}"/charge_now)
+  full=$(<"${batt}"/charge_full)
+  state=$(<"${batt}"/status)
+
+  charge=$(( current * 100 / full ))
+
+  case "${state}" in
+    Full) batstat="=" ;;
+    Charging) batstat="+" ;;
+    Discharging) batstat="-" ;;
+  esac
+
+  printf "%s" " ${batstat}${charge}% "
+}
+
+dte() {
+  dt=$(date +"%a %d-%m-%Y %H:%M")
+  printf "%s" " ${dt}"
+}
+
 while (( 1 )); do
-  ibus=$(ibus engine 2> /dev/null)
   time=$(date +"%a %d-%m-%Y %H:%M")
   batt=$(batt)
   net=$(conn)
-  printf "%s %s %s" "BATTERY: ${batt} |" "${net} |" "${time}"
+  printf "%b" "BATT:$(bat)| HDD:$(hdd)| MEM:$(mem)| CPU:$(cpu)|$(con)| EML:\
+$(eml)| PKG:$(pac)AUR:$(ups)$(aur)|$(dte)"
   printf "\n"
   sleep 1
 done
