@@ -6,7 +6,9 @@ PID=$(pidof offlineimap)
 
 offlineimap -c ~/.offlineimap/offlineimaprc -o -u quiet &>/dev/null
 
-notmuch new
+# the notmuch-poll script is ASCII armoured because it contains a number of
+# e-mail addresses
+gpg -d ~/.mutt/notmuch-poll.asc 2>/dev/null | sh
 
 exit 0
 

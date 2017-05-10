@@ -19,7 +19,7 @@ pac() {
   if (( $pup > 0 )); then
     printf "%s" " ${pup} "
   else
-    printf "0"
+    printf " 0 "
   fi
 }
 
@@ -29,7 +29,7 @@ eml() {
   if (( ml > 0 )); then
     printf "%s" " ${ml} "
   else
-    printf "0"
+    printf " 0 "
   fi
 }
 
