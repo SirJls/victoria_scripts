@@ -27,7 +27,7 @@ fi
 if [[ -n $word ]]; then
   for match in "${files[@]}"; do
     if [[ $word == ${match#*/} ]]; then
-      /usr/bin/pass show "$match" 2>/dev/null
+      /usr/bin/pass -c "$match" 2>/dev/null
     fi
   done
 fi
