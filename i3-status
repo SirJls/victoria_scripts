@@ -24,8 +24,7 @@ pac() {
 }
 
 eml() {
-  maildirs="${HOME}/Documents/Mail/*/Inbox/new"
-  ml="$(find $maildirs -type f | wc -l)"
+  ml="$(notmuch search tag:unread | wc -l)"
   if (( ml > 0 )); then
     printf "%s" " ${ml} "
   else
