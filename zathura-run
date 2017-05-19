@@ -3,14 +3,11 @@
 day_time=$(dusk-or-dawn)
 
 if [[ $day_time == "dawn" ]]; then
-  # day
-  sed -i 's/include config_night/include config_day/g' \
-    "${XDG_CONFIG_HOME}/zathura/zathurarc"
+  sed -i 's/night/day/g' "${XDG_CONFIG_HOME}/zathura/zathurarc"
 else
-  sed -i 's/include config_day/include config_night/g' \
-    "${XDG_CONFIG_HOME}/zathura/zathurarc"
+  sed -i 's/day/night/g' "${XDG_CONFIG_HOME}/zathura/zathurarc"
 fi
 
-/usr/bin/zathura &>/dev/null
+/usr/bin/zathura
 
 # vim:set ft=sh et sw=2 ts=2 tw=79:

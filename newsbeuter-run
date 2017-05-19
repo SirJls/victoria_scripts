@@ -3,11 +3,11 @@
 day_time=$(dusk-or-dawn)
 
 if [[ $day_time == "dawn" ]]; then
-  # day
-  newsbeuter -C ${DOTFILES}/newsbeuter/config_day
+  sed -i 's/night/day/g' ${DOTFILES}/newsbeuter/config
 else
-  # night
-  newsbeuter -C ${DOTFILES}/newsbeuter/config_night
+  sed -i 's/day/night/g' ${DOTFILES}/newsbeuter/config
 fi
+
+/usr/bin/newsbeuter
 
 # vim:set ft=sh  et sw=2 ts=2 tw=79:
