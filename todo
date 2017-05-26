@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+usage() {
+  <<-'EOF'
+    Options:
+    -c     | Create job
+    -l     | List current jobs
+    -p n   | Print details for job n
+    -h     | Show help message
+EOF
+}
+
+alist() {
+  atq | sort -r -k3M -k4
+}
+
+aprint() {
+  awk -F\" '/@/ { print $2 }' <(at -c "$@")
+}
+
+aread() {
+  read -p "Date and time of message [D M Y HH:MM]: " datetime
+  read -p "Subject: " subject
+  read -p "Message body: " message
+  printf "Job will be run at %s\n" "$attime on $atdate"
+  at "$attime" "$atdate" << EOF
+   printf '%s\n' "$message" | mutt -s "REMINDER: $subject" mail@sirjls.nl
+EOF
+}
+
+if (( $# >= 1 )); then
+  case "$1" in
+    -c) aread
+        ;;
+    -p) aprint "$2"
+        ;;
+    -l) alist
+        ;;
+    -h) usage
+        ;;
+     *) usage && exit 1
+        ;;
+  esac
+else
+  aread
+fi
+
+# vim:set ft=bash et sw=2 ts=2 tw=79:
