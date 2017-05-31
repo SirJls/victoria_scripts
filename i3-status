@@ -15,7 +15,7 @@ aur() {
 }
 
 pac() {
-  pup="$(pacman -Qqu | wc -l)"
+  pup="$(pacman -Qqu --dbpath /tmp/checkup-db-sjors | wc -l)"
   if (( $pup > 0 )); then
     printf "%s" " ${pup} "
   else

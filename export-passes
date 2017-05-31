@@ -1,18 +1,12 @@
 #! /bin/sh
 
-[[ "$#" -ne 1 ]] && { printf "%s\n" "A filename is required to export the passes!"; exit 1; }
-
-FILE_NAME="$1"
-
 shopt -s nullglob globstar
 
 prefix=${PASSWORD_STORE_DIR:-~/.password-store}
 
 for file in "$prefix"/**/*.gpg; do
   file="${file#$prefix/}"
-  printf "%s\n" "Name: ${file%.*}" >> $FILE_NAME
-  pass "${file%.*}" >> $FILE_NAME
-  printf "\n\n" >> $FILE_NAME
-done
-
-# vim:set ft=sh et sw=2 ts=2 tw=79:
+  printf "%s\t" "Name: ${file%.*}"
+  pass "${file%.*}"
+  printf "\n\n"
+done | column -t
