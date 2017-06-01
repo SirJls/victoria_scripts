@@ -1,34 +1,45 @@
-#! /bin/python
+#! /usr/bin/python3
 
 # Make a netctl profile for school
 
 import os
 import sys
-from subprocess import check_output
+from subprocess import check_output, call
 
 def get_pass(account):
-    return check_output("pass " + account, shell=True).splitlines()[0]
+    return (check_output("pass " + account, shell=True).splitlines()[0])
 
-file=open("eduroam", "w")
+wireless_link  =(check_output("ip link | sed -n '/^2:/p' | awk '{print $2}' \
+        | cut -d ':' -f1", shell=True).splitlines()[0]).decode('UTF-8')
+
+ssid    ='eduroam'
+profile = wireless_link + '-' + ssid
+
+file=open(profile, "w")
+
 
 file.write("Description='Eduroam profile for the HRO'\n"
-        "Interface=wlp58s0\n"
+        "Interface=" + wireless_link + "\n"
         "Connection=wireless\n"
-        "Security=wpa-configsection\n"
-        "ESSID=eduroam\n"
+        "Security=wpa-configsection\n" "ESSID=" + ssid + "\n"
         "IP=dhcp\n"
         "WPAConfigSection=(\n"
-        "\t'ssid="'"eduroam"'"'\n"
+        "\t'ssid=" + '"' + ssid + '"' + "'\n"
         "\t'proto=RSN WPA'\n"
         "\t'key_mgmt=WPA-EAP'\n"
         "\t'eap=PEAP'\n"
         "\t'identity="'"0890040@hr.nl"'"'\n"
         "\t'password=" + '"' +  get_pass("0890040@hr.nl").decode("utf-8") +
         '"' + "'\n"
-        ")"
+        ")\n"
         )
-os.system('sudo mv eduroam /etc/netctl/eduroam')
-os.system('sudo netctl start eduroam')
+
+move_profile_command  = "sudo mv " + profile +  " /etc/netctl/"
+start_profile_command = "sudo netctl start " + profile
+
+call(move_profile_command, shell=True)
+call(start_profile_command, shell=True)
+
 file.close()
 
 # vim:set ft=python et sw=4 ts=8 tw=79:

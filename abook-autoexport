@@ -1,7 +1,5 @@
 #!/bin/sh
-#
-# abook export script to sync abook & mutt/alias by armin wolfermann
-abook --datafile $DOTFILES/abook/addressbook ${@}
+
 abook --convert \
 	--informat abook --infile $DOTFILES/abook/addressbook \
 	--outformat mutt --outfile $HOME/.mutt/alias.new

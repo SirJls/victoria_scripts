@@ -147,7 +147,7 @@ printf "%b" "\x1b[0m"
 printf "\n"
 
 # save old working dir
-current_dir=$(pwd)
+old_working_dir=$(pwd)
 
 # change directory
 cd "$DOTFILES"
@@ -177,10 +177,15 @@ if ( hash python2 &>/dev/null); then
         printf ">>> Compiling YCM with semantic support for C# \n"
         flags+=' --omnisharp-completer'
       fi
-
-      printf "%b" "\x1b[34m"
-      ${flags[@]}
       printf "%b" "\x1b[0m"
+
+      # start compile
+      ${flags[@]}
+
+      printf "%b" "\x1b[32m"
+      printf ">>> Successfully installed all the plugins!\n"
+      printf "%b" "\x1b[0m"
+
     fi
   fi
 else
@@ -191,10 +196,39 @@ python2 installed!\n"
   exit 1
 fi
 
-if (( $? == 0 )); then
-  printf "%b" "\x1b[32m"
-  printf ">>> Successfully installed all the plugins!\n"
-  printf "%b" "\x1b[0m"
+printf "\n"
+
+# change back to where we launched the script
+cd "$old_working_dir"
+
+if ( hash abook &>/dev/null ); then
+  if ( hash mutt &>/dev/null ); then
+
+    printf "%b" "\x1b[33m"
+    printf ">>> Found abook and mutt combination\n"
+    printf "%b" "\x1b[0m"
+
+    addressbook=$(ls -A "${DOTFILES}/abook/addressbook")
+    if [[ ! -z $addressbook ]]; then
+
+      printf "%b" "\x1b[33m"
+      printf ">>> Exporting abook contacts to mutt alias file\n"
+      printf "%b" "\x1b[0m"
+
+      printf "\n"
+
+      touch ${HOME}/.mutt/alias
+
+      sh $SCRIPTS/abook-autoexport
+
+      printf "%b" "\x1b[33m"
+      printf ">>> Succesfully exported abook contacts to mutt alias file! \n"
+      printf "%b" "\x1b[0m"
+
+      exit 0
+
+    fi
+  fi
 fi
 
 # vim:set ft=sh et sw=2 ts=2 tw=79:
