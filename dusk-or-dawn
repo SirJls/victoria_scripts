@@ -8,13 +8,10 @@ minutes=$(date +%M)
 total=$(( ${hours#0} * 60 + ${minutes#0} ))
 
 if (( $total < $DUSK_TIME)) && (( $total < $DAWN_TIME )); then
-  # night configuration
   echo "dusk"
 elif (( $total >= $DAWN_TIME )) && (( $total < $DUSK_TIME )); then
-  # day configuration
   echo "dawn"
 else
-  # night configuration
   echo "dusk"
 fi
 

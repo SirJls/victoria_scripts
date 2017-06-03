@@ -17,7 +17,6 @@ profile = wireless_link + '-' + ssid
 
 file=open(profile, "w")
 
-
 file.write("Description='Eduroam profile for the HRO'\n"
         "Interface=" + wireless_link + "\n"
         "Connection=wireless\n"

@@ -2,8 +2,10 @@
 
 while :;
 do
-  wp=$($SCRIPTS/wallpaper | sed -r 's/(^|$)/\1"/g')
-  eval "feh --randomize --bg-fill $wp"
+  wp=$($SCRIPTS/wallpaper)
+  array=($wp)
+  wp=${array[@]}
+  /usr/bin/feh --randomize --bg-fill "$wp"
   sleep 10
 done &
 

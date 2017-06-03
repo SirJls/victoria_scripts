@@ -3,7 +3,6 @@
 day_time=$(dusk-or-dawn)
 
 if [[ $day_time == "dawn" ]]; then
-  # day
   dmenu_run -nb "#ffffff" -nf "#6d767d" -sf "#6d767d" -sf "#a69500" -sb "#ffffff"
 else
   dmenu_run -nb "#0b141a" -nf "#61707a" -sf "#61707a" -sf "#ba656d" -sb "#0b141a"

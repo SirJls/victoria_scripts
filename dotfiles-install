@@ -19,7 +19,7 @@ log() {
          WARN) code=33 ;;
         ERROR) code=31 ;;
       SUCCESS) code=32 ;;
-            *) code=0 ;;
+            *) code=0  ;;
     esac
     echo -e "\e[${code}m${msg}\e[0m"
   else
