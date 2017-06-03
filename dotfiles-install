@@ -1,12 +1,36 @@
 #! /bin/bash
 
+SECONDS=0
+
 set -e
 
-printf "%b" "\x1b[33m"
-printf "%s\n" ">>> Finding dotfiles, builds and script directories..."
+log() {
+  local level=${1?}
+  shift
+  local code=''
+  local msg=">>> $*"
+  msg_array=($msg)
+  msg=${msg_array[@]}
+  if [ -t 2 ]
+  then
+    case "$level" in
+         INFO) code=36 ;;
+        DEBUG) code=30 ;;
+         WARN) code=33 ;;
+        ERROR) code=31 ;;
+      SUCCESS) code=32 ;;
+            *) code=0 ;;
+    esac
+    echo -e "\e[${code}m${msg}\e[0m"
+  else
+    echo "$msg"
+  fi >&2
+}
 
-scripts_dir="$(realpath $(dirname ${BASH_SOURCE}))"
-machine_dir="$(realpath $(dirname $scripts_dir))"
+log INFO "Finding dotfiles, builds and script directories..."
+
+scriptfiles="$(realpath $(dirname ${BASH_SOURCE}))"
+machine_dir="$(realpath $(dirname $scriptfiles))"
 dotfiles=$(find $machine_dir -maxdepth 1 -type d -name "*dotfiles")
 buildfiles=$(find $machine_dir -maxdepth 1 -type d -name "*builds")
 
@@ -14,14 +38,12 @@ old_dotfiles="${HOME}/.dotfiles_old"
 install_file=$(ls -A ${dotfiles}/install)
 
 if [[ ! -d $old_dotfiles ]]; then
-  printf "%s\n" ">>> Creating directory ${old_dotfiles}."
+  log NORM "Creating directory ${old_dotfiles}."
   mkdir $old_dotfiles
 fi
 
 if [[ ! -z $install_file ]]; then
-  printf "%b" "\x1b[32m"
-  printf "%s\n\n" ">>> Found install file: ${install_file}"
-  printf "%b" "\x1b[0m"
+  log SUCCESS "Found install file: ${install_file}!\n"
   while read line; do
     comment=$(echo $line | awk '{ if (/^#/) { print "0" } else { print "1"} }')
     empty=$(echo $line | awk '{ if (/./) { print "1" } else { print "0" } }')
@@ -32,14 +54,10 @@ if [[ ! -z $install_file ]]; then
       yes | rm -rf  "${old_dotfiles}/.*"
       yes | rm -rf "${old_dotfiles}/*"
 
-      printf "%b" "\x1b[33m"
-      printf ">>> Moving ${stripped_file} -> ${old_dotfiles}\n"
+      log NORM "Moving ${stripped_file} -> ${old_dotfiles}"
       mv "${HOME}/.${stripped_file}" "${old_dotfiles}" &> /dev/null
-      printf "%b" "\x1b[0m"
 
-      printf "%b" "\x1b[34m"
-      printf ">>> Symbolic link ${dotfiles}/${file} -> ${HOME}/.${stripped_file}\n"
-      printf "%b" "\x1b[0m"
+      log NORM "Symbolic link ${dotfiles}/${file} -> ${HOME}/.${stripped_file}"
 
       ln -s "${dotfiles}/${file}" "${HOME}/.${stripped_file}"
 
@@ -47,64 +65,55 @@ if [[ ! -z $install_file ]]; then
   done < $install_file
 fi
 
-printf "\n\n"
+printf "\n"
 
-printf "%b" "\x1b[33m"
-printf "%s\n" ">>> Zsh consistency checks..."
-printf "%b" "\x1b[0m"
+log INFO "Zsh consistency checks..."
 
 # zsh config stuff
 if ( hash zsh &>/dev/null ); then
-  printf "%b" "\x1b[32m"
-  printf "%s\n" ">>> Zsh shell found!"
-  printf "%b" "\x1b[0m"
-  if [[ ! -d "${DOTFILES}/zsh/history" ]]; then
-    printf "%b" "\x1b[33m"
-    printf "%s\n" ">>> Creating directory ${DOTFILES}/zsh/history"
-    printf "%b" "\x1b[0m"
-    mkdir -p "${DOTFILES}/zsh/history"
-    if [[ ! -f "${DOTFILES}/zsh/history/histfile" ]]; then
-      printf "%s\n" ">>> Creating file ${DOTFILES}/zsh/history/histfile"
-      touch "${DOTFILES}/zsh/history/histfile"
-      printf "%b" "\x1b[0m"
-    fi
-  fi
+  log SUCCESS "Zsh shell found!\n"
+  log INFO "Adding \$SCRIPT, \$DOTFILES and \$BUILDS to ${dotfiles}/zsh/zshenv"
+
   # setup correct paths for configs in zshenv
   sed -i "s#DOTFILES=.*#DOTFILES=\"${dotfiles}\"#g" "${dotfiles}/zsh/zshenv"
-  sed -i "s#SCRIPTS=.*#SCRIPTS=\"${scripts_dir}\"#g" "${dotfiles}/zsh/zshenv"
+  sed -i "s#SCRIPTS=.*#SCRIPTS=\"${scriptfiles}\"#g" "${dotfiles}/zsh/zshenv"
   sed -i "s#BUILDS=.*#BUILDS=\"${buildfiles}\"#g" "${dotfiles}/zsh/zshenv"
+
+  if [[ ! -d "${DOTFILES}/zsh/history" ]]; then
+    log NORM "Creating directory ${DOTFILES}/zsh/history"
+    mkdir -p "${DOTFILES}/zsh/history"
+    if [[ ! -f "${DOTFILES}/zsh/history/histfile" ]]; then
+      log NORM "Creating file ${DOTFILES}/zsh/history/histfile"
+      touch "${DOTFILES}/zsh/history/histfile"
+    fi
+  fi
+
 else
-  printf "%b" "\x1b[31;1m"
-  printf "%b" ">>> Zsh was not found on your computer, please install!"
-  printf "%b" "\x1b[0m"
+  log ERROR "Zsh was not found on your computer, please install!"
   exit 1
 fi
 
-printf "\n\n"
+printf "\n"
 
 # vim config stuff
 
-printf "%b" "\x1b[33m"
-printf "%s\n" ">>> Setting up vim development environment..."
+log INFO "Setting up vim development environment..."
 
 if [[ ! -d "${DOTFILES}/vim/backup" ]]; then
-  printf "%s\n" ">>> Creating directory ${DOTFILES}/vim/backup"
+  log NORM "Creating directory ${DOTFILES}/vim/backup"
   mkdir -p "${DOTFILES}/vim/backup"
 fi
 
 if [[ ! -d "${DOTFILES}/vim/autload" ]]; then
-  printf "%s\n" ">>> Creating directory ${DOTFILES}/vim/autoload"
+  log NORM "Creating directory ${DOTFILES}/vim/autoload"
   mkdir -p "${DOTFILES}/vim/autoload"
 fi
-printf "%b" "\x1b[0m"
 
 profile=$(netctl list | sed -n '/*/p' | sed -n 's/\*//gp')
 
 if [[ -z $profile ]]; then
-  printf "%b" "\x1b[31;1m"
-  printf ">>> Could not find an active profile, make sure you are connected \ 
-to an access point!\n"
-  printf "%b" "\x1b[0m"
+  log ERROR "Could not find an active profile, make sure you are connected to a
+             access point!\n"
   exit 1
 fi
 
@@ -112,20 +121,14 @@ device=$(echo $profile | cut -d - -f1 | tr -d ' ')
 carrier=$(</sys/class/net/${device}/carrier)
 
 if [[ ! -f "${DOTFILES}/vim/autoload/plug.vim" ]]; then
-  printf "%b" "\x1b[31;1m"
-  printf ">>> Could not find file ${DOTFILES}/vim/autoload/plug.vim\n"
-  printf "%b" "\x1b[0m"
+  log ERROR "Could not find file ${DOTFILES}/vim/autoload/plug.vim\n"
 
-  printf "%b" "\x1b[34m"
   case "${carrier}" in
     1) curl -o "${DOTFILES}/vim/autoload/plug.vim" \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim 
-       printf "%b" "\x1b[0m"
     ;;
-    *) printf "%b" "\x1b[31;1m"
-       printf ">>> Make sure you have a working internet connection to use \ 
+    *) log ERROR "Make sure you have a working internet connection to use \ 
 the vim plugins\n"
-       printf "%b" "\x1b[0m"
        exit 1
     ;;
   esac
@@ -133,16 +136,12 @@ fi
 
 printf "\n"
 
-printf "%b" "\x1b[33m"
-printf "%s\n" ">>> Installing Plugins, this may take a while!"
-printf "%b" "\x1b[0m"
+log INFO "Installing Plugins, this may take a while!"
 
 # Install the plugins
 ( vim -c :PlugInstall! -c :xa! ) &> /dev/null
 
-printf "%b" "\x1b[32m"
-printf "%s\n" ">>> Plugins installed!"
-printf "%b" "\x1b[0m"
+log SUCCESS "Plugins installed!"
 
 printf "\n"
 
@@ -158,41 +157,31 @@ ycm_install_script=$(find . -regextype sed -regex ".*YouCompleteMe.install.py$")
 if ( hash python2 &>/dev/null); then
   if (( $ycm_hook > 0 )); then
     flags=("/usr/bin/python2 ${ycm_install_script}")
-    printf "%b" "\x1b[33m"
-    printf ">>> YouCompleteMe hook detected!\n\n"
-    printf "%b" "\x1b[0m"
+    log SUCCESS "YouCompleteMe hook detected!"
     if [[ -z $ycm_install_script ]]; then
       if ( hash clang &>/dev/null ); then
-        printf "%b" "\x1b[31;1m"
-        printf ">>> Could not find install.py for YouCompleteMe!\n"
-        printf ">>> No proper language semantics for YouCompleteMe\n"
+        log ERROR "Could not find install.py for YouCompleteMe!\n"
         exit 1
       fi
     else
-      printf "%b" "\x1b[33m"
       flags+=" --clang-completer"
-      printf ">>> Compiling YCM with semantic support for C-family languages\n"
+      log NORM "Compiling YCM with semantic support for C-family languages"
       if ( hash mono &>/dev/null ); then
-        printf ">>> Mono detected... \n"
-        printf ">>> Compiling YCM with semantic support for C# \n"
+        log SUCCESS "Mono detected!"
+        log NORM "Compiling YCM with semantic support for C#\n"
         flags+=' --omnisharp-completer'
       fi
-      printf "%b" "\x1b[0m"
 
       # start compile
       ${flags[@]}
 
-      printf "%b" "\x1b[32m"
-      printf ">>> Successfully installed all the plugins!\n"
-      printf "%b" "\x1b[0m"
+      log SUCCESS "Successfully installed all the plugins!\n"
 
     fi
   fi
 else
-  printf "%b" "\x1b[31;1m"
-  printf ">>> Python was not detected on your system, please make sure you have
-python2 installed!\n"
-  printf "%b" "\x1b[0m"
+  log ERROR "Python was not detected on your system, please make sure you have
+             python2 installed!\n"
   exit 1
 fi
 
@@ -202,33 +191,34 @@ printf "\n"
 cd "$old_working_dir"
 
 if ( hash abook &>/dev/null ); then
+  addressbook_location="${DOTFILES}/abook/addressbook"
+  log SUCCESS "Found abook!"
   if ( hash mutt &>/dev/null ); then
+    log SUCCESS "Found mutt!"
 
-    printf "%b" "\x1b[33m"
-    printf ">>> Found abook and mutt combination\n"
-    printf "%b" "\x1b[0m"
+    log SUCCESS "Found mutt and abook combination, now checking
+                ${addressbook_location} for valid addressbook!"
 
-    addressbook=$(ls -A "${DOTFILES}/abook/addressbook")
+    addressbook=$(ls -A $addressbook_location)
     if [[ ! -z $addressbook ]]; then
 
-      printf "%b" "\x1b[33m"
-      printf ">>> Exporting abook contacts to mutt alias file\n"
-      printf "%b" "\x1b[0m"
-
-      printf "\n"
+      log SUCCESS "Valid addressbook found, exporting abook contacts to mutt
+                    alias file..."
 
       touch ${HOME}/.mutt/alias
 
       sh $SCRIPTS/abook-autoexport
 
-      printf "%b" "\x1b[33m"
-      printf ">>> Succesfully exported abook contacts to mutt alias file! \n"
-      printf "%b" "\x1b[0m"
-
-      exit 0
+      log SUCCESS "Successfully exported abook contacts to mutt alias file!"
 
     fi
   fi
 fi
+
+ELAPSED="Elapsed time: $(($SECONDS / 3600))hrs $((($SECONDS / 60) % 60))min $(($SECONDS % 60))sec"
+
+log INFO "${ELAPSED}"
+
+exit 0
 
 # vim:set ft=sh et sw=2 ts=2 tw=79:
