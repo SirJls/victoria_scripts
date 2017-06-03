@@ -3,7 +3,6 @@
 day_time=$(dusk-or-dawn)
 
 if [[ $day_time == "dawn" ]]; then
-  # day
   for a in ~/.mutt/accounts/*;
   do
     sed -i 's/night/day/g' "$a"
@@ -11,7 +10,6 @@ if [[ $day_time == "dawn" ]]; then
   sed -i 's/night/day/g' ~/.mutt/muttrc
   sed -i 's/night/day/g' ~/.mutt/configs/sidebar.config
 else
-  # night
   for a in ~/.mutt/accounts/*;
   do
     sed -i 's/day/night/g' "$a"
