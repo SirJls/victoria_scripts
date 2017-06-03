@@ -9,7 +9,7 @@
 target=( $(awk '/media\/[\^A-Z0-9]/ {print $2}' /proc/mounts) )
 
 checkbusy() {
- grep -q "PID" <(lsof +D "${target[@]}" 2>/dev/null)
+  grep -q "PID" <(lsof +D "${target[@]}" 2>/dev/null)
   if (( $? == 0 )); then
     printf "%s\n" "${target##*/} busy…"
     exit 1
@@ -34,22 +34,9 @@ if (( ${#target[@]} > 1 )); then
   done
 fi
 
-# check for share
-for drive in "${shares[@]}"; do
-  if [[ $drive =~ ${target##*/} ]]; then
-    share="$drive"
-  fi
-done
-
 # options per filesystem
 if [[ -n $target ]]; then
-  for drive in "${shares[@]}"; do
-    if [[ $drive = ${target##*/} ]]; then
-      cmd=$(sudo umount "$target" &>/dev/null)
-    else
-      cmd=$(udiskie-umount -d "$target" &>/dev/null)
-    fi
-  done
+  cmd=$(udiskie-umount -d "$target" &>/dev/null)
   # do it
   checkbusy
   #flush to disk
