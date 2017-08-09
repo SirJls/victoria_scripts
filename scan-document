@@ -1,0 +1,6 @@
+#! /bin/sh
+
+scanimage --device "$1" --progress --format tiff --mode Color --resolution 300 \
+  | convert - -resize 50% -quality 75 "$2"
+
+#vim:set ft=sh et sw=2 ts=2 tw=79:

@@ -1,5 +1,6 @@
 #!/bin/sh
 
+abook --datafile $DOTFILES/abook/addressbook ${@}
 abook --convert \
 	--informat abook --infile $DOTFILES/abook/addressbook \
 	--outformat mutt --outfile $HOME/.mutt/alias.new

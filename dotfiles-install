@@ -207,7 +207,12 @@ if ( hash abook &>/dev/null ); then
 
       touch ${HOME}/.mutt/alias
 
-      sh $SCRIPTS/abook-autoexport
+      abook --convert \
+        --informat abook --infile $DOTFILES/abook/addressbook \
+        --outformat mutt --outfile $HOME/.mutt/alias.new
+      mv $HOME/.mutt/alias $HOME/.mutt/alias.bak
+      mv $HOME/.mutt/alias.new $HOME/.mutt/alias
+
 
       log SUCCESS "Successfully exported abook contacts to mutt alias file!"
 

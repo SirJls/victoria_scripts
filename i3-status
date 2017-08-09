@@ -3,7 +3,9 @@
 ups() {
   ups="$(wc -l < /tmp/aurupdates*)"
   if (( ups > 0 )); then
-    printf "%s" " ${ups} "
+    printf "%s" " ${ups}"
+  else
+    printf "%s" " 0"
   fi
 }
 
@@ -48,27 +50,16 @@ mem() {
 }
 
 hdd() {
-  cap=$(awk '{ sum += $5 } END { print sum }' <(df -P))
-  printf "%s" " ${cap}% "
+  cap="$(df -h --total | awk 'END {print $5}')"
+  printf  "%s" " ${cap} "
 }
 
 con() {
-  profile=$(netctl list | sed -n '/*/p' | sed -n 's/\*//gp')
-  device=$(echo $profile | cut -d - -f1 | tr -d ' ')
-  carrier=$(</sys/class/net/${device}/carrier)
+  sta=$(connmanctl state | sed -n '1s/State[^a-zA-Z]*//p' | tr -d ' ')
+  acp=$(connmanctl services | sed -n '/*AO/p' | awk '{print $2}')
+  net="NET: ${sta} | ACCESS POINT: ${acp}"
 
-  if [[ $profile != "" ]]; then
-    case "${carrier}" in
-      1) network="CONNECTION: UP | ACCESS POINT:${profile}"     ;;
-      *) network="CONNECTION: DOWN | ACCESS POINT:${profile}"   ;;
-    esac
-  else
-    case "${carrier}" in
-      1) network="CONNECTION: UP | ACCESS POINT: DISCONNECTED"   ;;
-      *) network="CONNECTION: DOWN | ACCESS POINT: DISCONNECTED" ;;
-    esac
-  fi
-  printf "%s" " ${network} "
+  printf "%s" " ${net^^} "
 }
 
 bat() {
@@ -100,7 +91,7 @@ while (( 1 )); do
   batt=$(batt)
   net=$(conn)
   printf "%b" "BATT:$(bat)| HDD:$(hdd)| MEM:$(mem)| CPU:$(cpu)|$(con)| EML:\
-$(eml)| PKG:$(pac)AUR:$(ups)$(aur)|$(dte)"
+$(eml)| PKG:$(pac)AUR:$(ups)$(aur) |$(dte)"
   printf "\n"
   sleep 1
 done
