@@ -56,7 +56,7 @@ hdd() {
 
 con() {
   sta=$(connmanctl state | sed -n '1s/State[^a-zA-Z]*//p' | tr -d ' ')
-  acp=$(connmanctl services | sed -n '/*AO/p' | awk '{print $2}')
+  acp=$(connmanctl services | sed -n '/*A[OR]/p' | awk '{print $2}')
   net="NET: ${sta} | ACCESS POINT: ${acp}"
 
   printf "%s" " ${net^^} "

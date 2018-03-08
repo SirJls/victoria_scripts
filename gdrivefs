@@ -1,0 +1,371 @@
+#! /bin/bash
+
+set -e
+
+usage () {
+
+
+    cat << EOF
+
+  USAGE: GDRIVEFS ...
+
+  GDRIVEFS OPTIONS:
+
+
+
+  -u, --unmount          |  Unmount the google drive FUSE filesystem
+  -m=path, --mount=path  |  Mountpoint for the google drive FUSE filesystem
+
+  -i, --init             |  Initialize the authorization file and directory
+  -c, --clean            |  Clean the temp file
+  -h, --help             |  Show this page
+
+EOF
+}
+
+log() {
+    local level=${1?}
+    shift
+    local code=''
+    local msg=">>> $*"
+    msg_array=($msg)
+    if [ -t 2 ]
+    then
+        case "$level" in
+            INFO)    code=36 ;;
+            WARN)    code=33 ;;
+            ERROR)   code=31 ;;
+            SUCCESS) code=32 ;;
+            *)       code=0  ;;
+        esac
+        echo -e "\e[${code}m${msg}\e[0m"
+    else
+        echo "$msg"
+    fi >&2
+}
+
+if [ "$(id -u)" != "0" ]; then
+    log ERROR "This script must be run as root!" 1>&2
+    exit 1
+fi
+
+filename=$(basename $0)
+user_home=$(cat /etc/passwd | sed  -n "/$SUDO_USER/p" | cut -d : -f 6)
+current_user=${user_home##*/}
+auth_storage_file="${user_home}/.gdfs/creds"
+mntpoint=/tmp/gdmntpoint*
+lnpoint=/tmp/gdlnpoint*
+
+if test ! -e $mntpoint; then
+    mntpoint=$(mktemp -t gdmntpoint.XXXXXX)
+fi
+
+if test ! -e $lnpoint; then
+    lnpoint=$(mktemp -t gdlnpoint.XXXXXX)
+fi
+
+# Must be below the above checks, because content of $mntpoint is need for
+# setting permissions
+# mounting_permissions=(rw,nonempty,noatime,allow_other,uid=$(id -u $current_user)
+#                       ,gid=$(id -g $current_user),big_writes,default_permissions
+#                       ,default_perm_folder=755,default_perm_file_editable=664
+#                       $auth_storage_file $(<$mntpoint)
+#                      )
+mounting_permissions=(rw,nonempty,noatime,allow_other,uid=$(id -u $current_user),gid=$(id -g $current_user),big_writes,default_permissions,default_perm_folder=775,default_perm_file_noneditable=444,default_perm_file_editable=664 $auth_storage_file $(<$mntpoint))
+
+is_linked () {
+    local arg=${1?}
+    if test -L $arg; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+is_mounted () {
+    local arg=${1?}
+    if /usr/bin/mount | grep $arg >/dev/null; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+is_initialized () {
+    if test -e $auth_storage_file; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+is_authorized () {
+    if test -s $auth_storage_file; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+guard_when_initialized_and_authorized () {
+    if is_initialized && is_authorized; then
+        log INFO "Authorization storage file is already initialized!"
+        exit 0
+    fi
+}
+
+guard_when_initialized_and_not_authorized () {
+    if is_initialized && ! is_authorized; then
+        log INFO "The authorization storage file seems to be missing the authorization code! Please follow the following instructions:\n"
+        gdfstool auth -u
+        exit 1
+    fi
+}
+
+guard_when_not_initialized_and_not_authorized () {
+    if ! is_initialized && ! is_authorized; then
+        if test ! -e $auth_storage_file; then
+            log WARN "The auth storage file could not be found!"
+            while :; do
+                read -r -p "Initialize the authorization file: ${auth_storage_file}? [Y/n]" response
+                case "$response" in
+                    [nN]*)
+                        log ERROR "${filename} could not proceed, because GDriveFS needs a storage authorization file!"
+                        exit 1
+                        ;;
+                    [yY]*)
+                        init
+                        break
+                        ;;
+                esac
+            done
+        fi
+    fi
+}
+
+guard_when_already_linked () {
+    local lp=${1}
+    if is_linked $lp; then
+        log INFO "${lp} is already linked!"
+        exit 0
+    fi
+}
+
+guard_when_not_valid_link_location () {
+    local lp=${1%/*}
+    if test ! -d ${lp}; then
+        log WARN "The path ${arg} is not a valid symlink location!"
+        exit 1
+    fi
+}
+
+guard_when_other_linked () {
+    if test -s $lnpoint; then
+        log WARN "There is already a FUSE mount linked!"
+        local arg=${1?}
+        local lp=$(<$lnpoint)
+        while :; do
+            read -r -p "Unlink ${lp} and link ${arg}? [Y/n]" response
+            case "$response" in
+                [nN]*)
+                    log ERROR "Linking aborted!"
+                    exit 1
+                    ;;
+                [yY]*)
+                    break
+                    ;;
+            esac
+        done
+    fi
+}
+
+guard_when_not_mounted () {
+    if test ! -s $mntpoint; then
+        log ERROR "There seems to be no FUSE mounted!"
+        exit 1
+    fi
+}
+
+guard_when_already_mounted () {
+    local mp=${1}
+    if is_mounted $mp; then
+        log INFO "${mp} is already mounted!"
+        exit 0
+    fi
+}
+
+guard_when_not_valid_mountpoint () {
+    local mp=${1}
+    if test ! -d $mp; then
+        log ERROR "The path ${mp:-\"\"} is not a valid mount-point!"
+        exit 1
+    fi
+}
+
+guard_when_other_mounted () {
+    if test -s $mntpoint; then
+        log WARN "There is already a FUSE mounted!"
+        local arg=${1?}
+        local mp=$(<$mntpoint)
+        while :; do
+            read -r -p "Unmount ${mp} and mount ${arg}? [Y/n]" response
+            case "$response" in
+                [nN]*)
+                    log ERROR "Mount aborted!"
+                    exit 1
+                    ;;
+                [yY]*)
+                    break
+                    ;;
+            esac
+        done
+    fi
+}
+
+guard_when_changed_mountpoint_update_permissions () {
+    local mp=$(<$mntpoint)
+    local pm=${mounting_permissions[-1]}
+    if test $pm == $auth_storage_file; then
+        mounting_permissions+=($mp)
+    fi
+    if test $pm != $mp; then
+        mounting_permissions[-1]=$mp
+    fi
+}
+
+clean () {
+    log INFO "Cleaning orphan tmp files..."
+    rm /tmp/gd{lnpoint,mntpoint}*
+}
+
+init() {
+    local auth_dir=${auth_storage_file%/*}
+
+    guard_when_initialized_and_not_authorized
+    guard_when_initialized_and_authorized
+
+    mkdir -p $auth_dir
+    touch "$auth_storage_file"
+    chmod 755 $auth_dir
+    chmod 644 $auth_storage_file
+    chown -R $current_user:$current_user $auth_dir
+    log SUCCESS "Created ${auth_storage_file}, please make sure to produce and add an authorization code!\n"
+    gdfstool auth -u
+    log INFO "Now run: gdfstool auth -a ${auth_storage_file} [\"authorization code\"]"
+}
+
+mount () {
+    local arg=${1?}
+
+    guard_when_not_initialized_and_not_authorized
+    guard_when_initialized_and_not_authorized
+
+    guard_when_not_valid_mountpoint $arg
+    # guard_when_already_mounted $arg
+    guard_when_other_mounted $arg
+
+    echo $arg > $mntpoint
+
+    # This guard is needed to make sure that the mounting_permissions array gets
+    # properly updated
+    guard_when_changed_mountpoint_update_permissions
+
+    if gdfs -o "${mounting_permissions[@]}"; then
+        log SUCCESS "FUSE drive successfully mounted at: ${arg}!"
+    else
+        log ERROR "Mounting FUSE drive ${mntpoint} failed!"
+        clean &>/dev/null
+        exit 1
+    fi
+}
+
+unlink () {
+    guard_when_not_initialized_and_not_authorized
+    guard_when_initialized_and_not_authorized
+
+    local lp=$(<$lnpoint)
+    if ! unlink $lp &>/dev/null; then
+        log WARN "Could not unlink ${lp}!"
+    fi
+}
+
+unmount () {
+    guard_when_not_initialized_and_not_authorized
+    guard_when_initialized_and_not_authorized
+
+    guard_when_not_mounted
+
+    # Needs to be below guard_when_not_mounted.
+    local mp=$(<$mntpoint)
+
+    if ! umount $mp &>/dev/null; then
+        log ERROR "Could not unmount ${mp}!"
+        exit 1
+    fi
+
+    clean
+    log SUCCESS "Successfully unmounted ${mp}!"
+}
+
+link () {
+    guard_when_not_initialized_and_not_authorized
+    guard_when_initialized_and_not_authorized
+
+    guard_when_not_mounted
+
+    local arg=${1:-GDrive}
+    local mp=$(<$mntpoint)
+
+    guard_when_already_linked $arg
+    guard_when_not_valid_link_location $arg
+    guard_when_other_linked $arg
+
+    ln -s $mp $arg
+    chmod 777 $arg
+    chown $current_user:$current_user $arg
+
+    echo $arg > $lnpoint
+    log SUCCESS "Created symlink for ${mp} -> ${arg}"
+}
+
+if (( "$#" == 0 )); then
+    usage
+    exit 1
+fi
+
+for i in "$@"
+do
+    case $i in
+        -i|--init)
+            init
+            shift
+            exit 0
+            ;;
+        -c|--clean)
+            clean
+            shift
+            exit 0
+            ;;
+        -h|--help)
+            usage
+            shift
+            exit 0
+            ;;
+        -u|--unmount)
+            unmount
+            shift
+            ;;
+        -m=*|--mount=*)
+            mount "${i#*=}"
+            shift
+            ;;
+        -l=*|--link=*)
+            link "${i#*=}"
+            shift
+            ;;
+        *)
+            usage
+            exit 1
+            ;;
+    esac
+done

@@ -55,7 +55,9 @@ if [[ ! -z $install_file ]]; then
       yes | rm -rf "${old_dotfiles}/*"
 
       log NORM "Moving ${stripped_file} -> ${old_dotfiles}"
-      mv "${HOME}/.${stripped_file}" "${old_dotfiles}" &> /dev/null
+      if test -L "${HOME}/.${stripped_file}" ; then
+        mv "${HOME}/.${stripped_file}" "${old_dotfiles}"
+      fi
 
       log NORM "Symbolic link ${dotfiles}/${file} -> ${HOME}/.${stripped_file}"
 
@@ -78,6 +80,9 @@ if ( hash zsh &>/dev/null ); then
   sed -i "s#DOTFILES=.*#DOTFILES=\"${dotfiles}\"#g" "${dotfiles}/zsh/zshenv"
   sed -i "s#SCRIPTS=.*#SCRIPTS=\"${scriptfiles}\"#g" "${dotfiles}/zsh/zshenv"
   sed -i "s#BUILDS=.*#BUILDS=\"${buildfiles}\"#g" "${dotfiles}/zsh/zshenv"
+
+  export DOTFILES=${dotfiles/zsh/zshenv}
+
 
   if [[ ! -d "${DOTFILES}/zsh/history" ]]; then
     log NORM "Creating directory ${DOTFILES}/zsh/history"
@@ -109,15 +114,16 @@ if [[ ! -d "${DOTFILES}/vim/autload" ]]; then
   mkdir -p "${DOTFILES}/vim/autoload"
 fi
 
-profile=$(netctl list | sed -n '/*/p' | sed -n 's/\*//gp')
+nprofile=$(netctl list | sed -n '/*/p' | sed -n 's/\*//gp')
+cprofile=$(connmanctl state | sed -n '1s/State[^a-zA-Z]*//p' | tr -d ' ')
 
-if [[ -z $profile ]]; then
+if [[ -z $nprofile ]] && [[ -z $cprofile ]]; then
   log ERROR "Could not find an active profile, make sure you are connected to a
              access point!\n"
   exit 1
 fi
 
-device=$(echo $profile | cut -d - -f1 | tr -d ' ')
+device=$(ip link | sed -n '/BROADCAST/p' | awk '{print $2}' | cut -d : -f1)
 carrier=$(</sys/class/net/${device}/carrier)
 
 if [[ ! -f "${DOTFILES}/vim/autoload/plug.vim" ]]; then

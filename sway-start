@@ -1,14 +1,13 @@
 #!/usr/bin/env sh
 
 export XKB_DEFAULT_OPTIONS=caps:swapescape
+export TERM=xterm-termite
 export WLC_DEBUG=xwm
 export _JAVA_AWT_WM_NONREPARENTING=1
-export GTK_IM_MOUDLE=ibus
+export GTK_IM_MOUDLE=xim
 export XMODIFIERS=@im=ibus
 export QT_IM_MODULE=ibus
 
-while true; do
-  /usr/bin/sway &> /dev/null
-done
+/usr/bin/sway &> /dev/null
 
 # vim:set ft=sh et sw=2 ts=2 tw=79:

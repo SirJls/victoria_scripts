@@ -7,9 +7,8 @@ target=( $(awk '/media\/PHILIPS/ {print $2}' /proc/mounts) )
 directories=(Documents Pictures School)
 
 if [[ -n $target ]]; then
+  # make sure it is read-write mounted
   for dir in "${directories[@]}"; do
     rsync -rmza --delete "$dir" "$target"
   done
 fi
-
-# vim:set ft=sh et sw=2 ts=2 tw=79:

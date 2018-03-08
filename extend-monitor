@@ -1,0 +1,73 @@
+#!/bin/bash
+exec >/home/sjors/udev.out 2>&1
+
+export DISPLAY=:0
+export XAUTHORITY=/home/sjors/.Xauthority
+
+usage () {
+  cat << EOF
+
+  USAGE: EXTEND-MONITOR ...
+
+  EXTEND-MONITOR OPTIONS:
+
+
+  -r=rate,              --refresh=rate             |  This sets the screen size.
+  -s=widthxheight,      --size=widthxheight        |  This sets the refresh rate closest to the specified value.
+  -m=extend|mirror|off, --manage=extend|mirror|off |  Handles the way the external monitor be displayed; default=extend.
+
+  -h, --help                                       |  Show this page.
+
+EOF
+}
+
+intern=eDP1
+extern=DP1
+
+size="1920x1080"
+rate="60"
+manage=("extend")
+
+connection=$(</sys/class/drm/**-DP-1/status)
+status=$(</sys/class/drm/**-DP-1/enabled)
+
+for i in "$@"
+do
+    case $i in
+        -r=*|--refresh=*)
+            rate="${i#*=:-}"
+            shift
+            ;;
+        -s=*|--size=*)
+            size="${i#*=}"
+            shift
+            ;;
+        -m=*|--manage=*)
+            manage=("${i#*=}")
+            shift
+            ;;
+        -h|--help)
+            usage
+            shift
+            exit 0
+            ;;
+    esac
+done
+
+off() {
+  xrandr --output "$extern" --off
+}
+
+mirror() {
+  xrandr --output "$extern" -s "$size" --same-as "$intern" --preferred --primary --output "$intern" --preferred
+}
+
+extend() {
+  xrandr --output "$extern" -s "$size" --right-of "$intern" --preferred --primary --output "$intern" --preferred
+}
+
+if test $connection = "connected"; then
+  "${manage[@]}"
+else
+  off
+fi
