@@ -9,17 +9,17 @@ do
   sleep 10
 done &
 
-while :;
-do
-  $SCRIPTS/fetch-aur
-  sleep $(( 60 * 1 ))
-done &
+# while :;
+# do
+#   $SCRIPTS/fetch-aur
+#   sleep $(( 60 * 1 ))
+# done &
 
-while :;
-do
-  $SCRIPTS/fetch-mail
-  sleep $(( 60 * 1 ))
-done &
+# while :;
+# do
+#   $SCRIPTS/fetch-mail
+#   sleep $(( 60 * 1 ))
+# done &
 
 while :;
 do

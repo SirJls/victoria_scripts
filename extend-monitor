@@ -1,5 +1,6 @@
 #!/bin/bash
-exec >/home/sjors/udev.out 2>&1
+
+set -e
 
 export DISPLAY=:0
 export XAUTHORITY=/home/sjors/.Xauthority
@@ -14,7 +15,10 @@ usage () {
 
   -r=rate,              --refresh=rate             |  This sets the screen size.
   -s=widthxheight,      --size=widthxheight        |  This sets the refresh rate closest to the specified value.
-  -m=extend|mirror|off, --manage=extend|mirror|off |  Handles the way the external monitor be displayed; default=extend.
+  -m=ext|mir,           --manage=ext|mir           |  Mirror or extends last external monitor; defaults extends.
+  -t,                   --toggle                   |  Toggle between 2 monitors.
+  -c=monitor,           --connect=monitor          |  Connect monitor.
+  -d=monitor,           --disconnect=monitor       |  Disconnect monitor.
 
   -h, --help                                       |  Show this page.
 
@@ -26,48 +30,125 @@ extern=DP1
 
 size="1920x1080"
 rate="60"
-manage=("extend")
+manage=("ext")
+toggle=1
+# monitors=($(awk '{print $4}' <<< $(xrandr --listactivemonitors)))
+monitors=(eDP1 DP1) # first being intern, rest of list extern
 
 connection=$(</sys/class/drm/**-DP-1/status)
 status=$(</sys/class/drm/**-DP-1/enabled)
 
+xrandr --addmode "${monitors[1]}" "$size"
+
 for i in "$@"
 do
-    case $i in
-        -r=*|--refresh=*)
-            rate="${i#*=:-}"
-            shift
-            ;;
-        -s=*|--size=*)
-            size="${i#*=}"
-            shift
-            ;;
-        -m=*|--manage=*)
-            manage=("${i#*=}")
-            shift
-            ;;
-        -h|--help)
-            usage
-            shift
-            exit 0
-            ;;
-    esac
+  case $i in
+    -r=*|--refresh=*)
+      rate="${i#*=:-}"
+      shift
+      ;;
+    -s=*|--size=*)
+      size="${i#*=}"
+      shift
+      ;;
+    -m=*|--manage=*)
+      manage=("${i#*=}")
+      shift
+      ;;
+    -c=*|--connect=*)
+      manage=(con "${i#*=}")
+      shift
+      ;;
+    -d=*|--disconnect=*)
+      manage=(dis "${i#*=}")
+      shift
+      ;;
+    -t|--toggle)
+      toggle=0
+      shift
+      ;;
+    -h|--help)
+      usage
+      shift
+      exit 0
+      ;;
+  esac
 done
 
-off() {
-  xrandr --output "$extern" --off
+
+con() {
+  local mo=${1:-${monitors[0]}}
+  if xrandr --output "$mo" --auto; then
+    return 0
+  fi
+  exit 1
 }
 
-mirror() {
-  xrandr --output "$extern" -s "$size" --same-as "$intern" --preferred --primary --output "$intern" --preferred
+dis() {
+  local mo=${1:-${monitors[1]}}
+  if xrandr --output "$mo" --off; then
+    return 0
+  fi
+  exit 1
 }
 
-extend() {
-  xrandr --output "$extern" -s "$size" --right-of "$intern" --preferred --primary --output "$intern" --preferred
+mir() {
+  for (( i = 1; i < "${#monitors[@]}"; i++ )); do
+    if xrandr --output "${monitors[$i]}" -s "$size" --same-as "${monitors[0]}" --preferred \
+      --primary --output "${monitors[0]}" --preferred; then
+    exit 0
+  fi
+done
+exit 1
 }
+
+ext() {
+  for (( i = 1; i < "${#monitors[@]}"; i++ )); do
+    if xrandr --output "${monitors[$i]}" -s "$size" --right-of "${monitors[0]}" --preferred \
+      --primary --output "${monitors[0]}" --preferred; then
+    exit 0
+  fi
+done
+exit 1
+}
+
+swp() {
+  local am=${1?}
+  local im=${2?}
+
+  if dis "$am" && con "$im"; then
+    exit 0
+  fi
+  exit 1
+}
+
+tog() {
+  local mo=($(awk 'NR>1 {print $4}' <<< $(xrandr --listmonitors)))
+
+  case ${#mo[@]} in
+    0)
+      on "${mo[0]}"
+      ;;
+    1)
+      for m in "${monitors[@]}"; do
+        if test "${mo[0]}" != "$m"; then
+          swp "${mo[0]}" "$m"
+        fi
+      done
+      ;;
+    2)
+      swp "${monitors[1]}" "${monitors[0]}" # con first, dis second
+      ;;
+  esac
+  exit 1
+}
+
+if test $connection = "connected" && test "${#monitors[@]}" = 2 && test $toggle = 0; then
+  tog
+fi
 
 if test $connection = "connected"; then
   "${manage[@]}"
 else
-  off
+  dis
 fi

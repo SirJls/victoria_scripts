@@ -1,15 +1,15 @@
-##! /usr/bin/env/sh
+#! /bin/sh
 
-PID=$(pidof offlineimap)
+PID=$(pidof mbsync)
 
 [ -n "$PID" ] && exit 1
 
-offlineimap -c ~/.offlineimap/offlineimaprc -o -u quiet &>/dev/null
+sta=$(connmanctl state | sed -n '1s/State[^a-zA-Z]*//p' | tr -d ' ')
 
-# the notmuch-poll script is ASCII armoured because it contains a number of
-# e-mail addresses
-gpg -d ~/.mutt/notmuch-poll.asc 2>/dev/null | sh
+if test $sta = "online"; then
+  sh /usr/local/bin/msmtp-runqueue.sh
+  mbsync -a -q -c ~/.mbsyncrc
+  gpg -d ~/Dropbox/Sensitive/notmuch-poll.asc 2>/dev/null | sh
+fi
 
 exit 0
-
-# vim:set ft=sh et sw=2 ts=2 tw=79:

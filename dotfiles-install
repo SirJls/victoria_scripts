@@ -14,12 +14,12 @@ log() {
   if [ -t 2 ]
   then
     case "$level" in
-         INFO) code=36 ;;
-        DEBUG) code=30 ;;
-         WARN) code=33 ;;
-        ERROR) code=31 ;;
+      INFO) code=36 ;;
+      DEBUG) code=30 ;;
+      WARN) code=33 ;;
+      ERROR) code=31 ;;
       SUCCESS) code=32 ;;
-            *) code=0  ;;
+      *) code=0  ;;
     esac
     echo -e "\e[${code}m${msg}\e[0m"
   else
@@ -83,7 +83,6 @@ if ( hash zsh &>/dev/null ); then
 
   export DOTFILES=${dotfiles/zsh/zshenv}
 
-
   if [[ ! -d "${DOTFILES}/zsh/history" ]]; then
     log NORM "Creating directory ${DOTFILES}/zsh/history"
     mkdir -p "${DOTFILES}/zsh/history"
@@ -97,6 +96,26 @@ else
   log ERROR "Zsh was not found on your computer, please install!"
   exit 1
 fi
+
+if ( ! hash dropbox ); then
+  log ERROR "Dropbox was not found on your computer, please install!"
+  exit 1
+fi
+
+if ( ! hash emacs ); then
+  log ERROR "Emacs was not found on your computer, please install!"
+  exit 1
+else
+    if [[ -d "${HOME}/spacemacs" ]]; then
+      git clone https://github.com/syl20bnr/spacemacs.git
+      (cd "${HOME}/spacemacs" && git checkout develop)
+    fi
+    if [[ -d "${HOME}/spacemacs-personal" ]]; then
+      git clone https://github.com/SirJls/spacemacs-personal.git
+    fi
+fi 2>/dev/null
+
+printf "\n"
 
 printf "\n"
 
@@ -119,7 +138,7 @@ cprofile=$(connmanctl state | sed -n '1s/State[^a-zA-Z]*//p' | tr -d ' ')
 
 if [[ -z $nprofile ]] && [[ -z $cprofile ]]; then
   log ERROR "Could not find an active profile, make sure you are connected to a
-             access point!\n"
+  access point!\n"
   exit 1
 fi
 
@@ -131,12 +150,12 @@ if [[ ! -f "${DOTFILES}/vim/autoload/plug.vim" ]]; then
 
   case "${carrier}" in
     1) curl -o "${DOTFILES}/vim/autoload/plug.vim" \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim 
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim 
     ;;
-    *) log ERROR "Make sure you have a working internet connection to use \ 
-the vim plugins\n"
-       exit 1
-    ;;
+  *) log ERROR "Make sure you have a working internet connection to use \ 
+    the vim plugins\n"
+  exit 1
+  ;;
   esac
 fi
 
@@ -157,41 +176,41 @@ old_working_dir=$(pwd)
 # change directory
 cd "$DOTFILES"
 
-ycm_hook=$(awk '/YouCompleteMe/' "${DOTFILES}/vim/vimrc" | wc -l)
-ycm_install_script=$(find . -regextype sed -regex ".*YouCompleteMe.install.py$")
+if ( ! hash vim ); then
+  ycm_hook=$(awk '/YouCompleteMe/' "${DOTFILES}/vim/vimrc" | wc -l)
+  ycm_install_script=$(find . -regextype sed -regex ".*YouCompleteMe.install.py$")
 
-if ( hash python2 &>/dev/null); then
-  if (( $ycm_hook > 0 )); then
-    flags=("/usr/bin/python2 ${ycm_install_script}")
-    log SUCCESS "YouCompleteMe hook detected!"
-    if [[ -z $ycm_install_script ]]; then
-      if ( hash clang &>/dev/null ); then
-        log ERROR "Could not find install.py for YouCompleteMe!\n"
-        exit 1
+  if ( hash python2 &>/dev/null); then
+    if (( $ycm_hook > 0 )); then
+      flags=("/usr/bin/python2 ${ycm_install_script}")
+      log SUCCESS "YouCompleteMe hook detected!"
+      if [[ -z $ycm_install_script ]]; then
+        if ( hash clang &>/dev/null ); then
+          log ERROR "Could not find install.py for YouCompleteMe!\n"
+          exit 1
+        fi
+      else
+        flags+=" --clang-completer"
+        log NORM "Compiling YCM with semantic support for C-family languages"
+        if ( hash mono &>/dev/null ); then
+          log SUCCESS "Mono detected!"
+          log NORM "Compiling YCM with semantic support for C#\n"
+          flags+=' --omnisharp-completer'
+        fi
+
+        # start compile
+        ${flags[@]}
+
+        log SUCCESS "Successfully installed all the plugins!\n"
+
       fi
-    else
-      flags+=" --clang-completer"
-      log NORM "Compiling YCM with semantic support for C-family languages"
-      if ( hash mono &>/dev/null ); then
-        log SUCCESS "Mono detected!"
-        log NORM "Compiling YCM with semantic support for C#\n"
-        flags+=' --omnisharp-completer'
-      fi
-
-      # start compile
-      ${flags[@]}
-
-      log SUCCESS "Successfully installed all the plugins!\n"
-
     fi
+  else
+    log ERROR "Python was not detected on your system, please make sure you have
+    python2 installed!\n"
+    exit 1
   fi
-else
-  log ERROR "Python was not detected on your system, please make sure you have
-             python2 installed!\n"
-  exit 1
-fi
-
-printf "\n"
+fi 2>/dev/null
 
 # change back to where we launched the script
 cd "$old_working_dir"
@@ -203,13 +222,13 @@ if ( hash abook &>/dev/null ); then
     log SUCCESS "Found mutt!"
 
     log SUCCESS "Found mutt and abook combination, now checking
-                ${addressbook_location} for valid addressbook!"
+    ${addressbook_location} for valid addressbook!"
 
     addressbook=$(ls -A $addressbook_location)
     if [[ ! -z $addressbook ]]; then
 
       log SUCCESS "Valid addressbook found, exporting abook contacts to mutt
-                    alias file..."
+      alias file..."
 
       touch ${HOME}/.mutt/alias
 
